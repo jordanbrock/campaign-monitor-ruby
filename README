@@ -15,16 +15,8 @@ Install
 
 Bugtracking
 
-* http://trac.spintech.com.au/plugins/campaign_monitor
+* http://jordanbrock.lighthouseapp.com/projects/13212/home
 
-Rubyforge project
+Git Repository
 
-* http://rubyforge.org/projects/campaignmonitor
-
-RDocs
-
-* http://campaignmonitor.rubyforge.org
-
-Subversion
-
-* svn://spintech.com.au/svn/plugins/campaign_monitor
+* http://github.com/jordanbrock/campaign-monitor-ruby
