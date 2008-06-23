@@ -1,0 +1,30 @@
+= campaign_monitor
+
+This library provides access to the Campaign Monitor API (http://www.campaignmonitor.com/api)
+
+== Pre-requisites
+
+An account with Campaign Monitor and the API Key. Accounts are free and can be obtained from
+http://www.campaignmonitor.com
+
+== Resources
+
+Install
+
+* gem install campaign_monitor
+
+Bugtracking
+
+* http://trac.spintech.com.au/plugins/campaign_monitor
+
+Rubyforge project
+
+* http://rubyforge.org/projects/campaignmonitor
+
+RDocs
+
+* http://campaignmonitor.rubyforge.org
+
+Subversion
+
+* svn://spintech.com.au/svn/plugins/campaign_monitor
