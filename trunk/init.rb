@@ -1,0 +1,1 @@
+require 'campaign_monitor'
