@@ -104,6 +104,7 @@ class CampaignMonitor
   #  end
   def clients
     response = User_GetClients()
+    return [] if response.empty?
     unless response["Code"].to_i != 0 
       response["Client"].collect{|c| Client.new(c["ClientID"].to_i, c["Name"])}
     else
@@ -122,6 +123,7 @@ class CampaignMonitor
   #  end
   def campaigns(client_id)
     response = Client_GetCampaigns("ClientID" => client_id)
+    return [] if response.empty?
     unless response["Code"].to_i != 0 
       response["Campaign"].collect{|c| Campaign.new(c["CampaignID"].to_i, c["Subject"], c["SentDate"], c["TotalRecipients"].to_i)}
     else
@@ -140,6 +142,7 @@ class CampaignMonitor
   #  end
   def lists(client_id)
     response = Client_GetLists("ClientID" => client_id)
+    return [] if response.empty?
     unless response["Code"].to_i != 0 
       response["List"].collect{|l| List.new(l["ListID"].to_i, l["Name"])}
     else
@@ -182,6 +185,7 @@ class CampaignMonitor
     #  end
     def lists
       response = @cm_client.Client_GetLists("ClientID" => @id)
+      return [] if response.empty?
       unless response["Code"].to_i != 0 
         response["List"].collect{|l| List.new(l["ListID"].to_i, l["Name"])}
       else
@@ -253,6 +257,7 @@ class CampaignMonitor
     #  end
     def active_subscribers(date)
       response = @cm_client.Subscribers_GetActive('ListID' => @id, "Date" => date.strftime("%Y-%m-%d %H:%M:%S"))
+      return [] if response.empty?
       unless response["Code"].to_i != 0 
         response["Subscriber"].collect{|s| Subscriber.new(s["EmailAddress"], s["Name"], s["Date"])}
       else
@@ -270,6 +275,7 @@ class CampaignMonitor
     #  end
     def unsubscribed(date)
       response = @cm_client.Subscribers_GetUnsubscribed('ListID' => @id, 'Date' => date.strftime("%Y-%m-%d %H:%M:%S"))
+      return [] if response.empty?
       unless response["Code"].to_i != 0 
         response["Subscriber"].collect{|s| Subscriber.new(s["EmailAddress"], s["Name"], s["Date"])}
       else
@@ -287,6 +293,7 @@ class CampaignMonitor
     #  end
     def bounced(date)
       response = @cm_client.Subscribers_GetBounced('ListID' => @id, 'Date' => date.strftime("%Y-%m-%d %H:%M:%S"))
+      return [] if response.empty?
       unless response["Code"].to_i != 0 
         response["Subscriber"].collect{|s| Subscriber.new(s["EmailAddress"], s["Name"], s["Date"])}
       else
@@ -317,6 +324,7 @@ class CampaignMonitor
     #  end
     def opens
       response = @cm_client.Campaign_GetOpens("CampaignID" => @id)
+      return [] if response.empty?
       unless response["Code"].to_i != 0 
         response["SubscriberOpen"].collect{|s| SubscriberOpen.new(s["EmailAddress"], s["ListID"].to_i, s["NumberOfOpens"])}
       else
@@ -333,6 +341,7 @@ class CampaignMonitor
     #  end
     def bounces
       response = @cm_client.Campaign_GetBounces("CampaignID"=> @id)
+      return [] if response.empty?
       unless response["Code"].to_i != 0 
         response["SubscriberBounce"].collect{|s| SubscriberBounce.new(s["EmailAddress"], s["ListID"].to_i, s["BounceType"])}
       else
@@ -349,6 +358,7 @@ class CampaignMonitor
     #  end
     def clicks
       response = @cm_client.Campaign_GetSubscriberClicks("CampaignID" => @id)
+      return [] if response.empty?
       unless response["Code"].to_i != 0 
         response["SubscriberClick"].collect{|s| SubscriberClick.new(s["EmailAddress"], s["ListID"].to_i, s["ClickedLinks"])}
       else
@@ -365,6 +375,7 @@ class CampaignMonitor
     #  end
     def unsubscribes
       response = @cm_client.Campaign_GetUnsubscribes("CampaignID" => @id)
+      return [] if response.empty?
       unless response["Code"].to_i != 0 
         response["SubscriberUnsubscribe"].collect{|s| SubscriberUnsubscribe.new(s["EmailAddress"], s["ListID"].to_i)}
       else
