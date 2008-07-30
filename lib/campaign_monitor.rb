@@ -71,9 +71,10 @@ class CampaignMonitor
    # Takes a CampaignMonitor API method name and set of parameters; 
    # returns an XmlSimple object with the response
   def request(method, *params)
-    response = XmlSimple.xml_in(http_get(request_url(method, params)), { 'KeepRoot' => false, 
-      'ForceArray' => %w[List Campaign Subscriber Client SubscriberOpen SubscriberUnsubscribe SubscriberClick SubscriberBounce], 
-      'NoAttr' => true })
+    response = XmlSimple.xml_in(http_get(request_url(method, params)), { 'keeproot' => false,
+      'forcearray' => %w[List Campaign Subscriber Client SubscriberOpen SubscriberUnsubscribe SubscriberClick SubscriberBounce], 
+      'noattr' => true })
+    response.delete('d1p1:type')
     response
   end
   
