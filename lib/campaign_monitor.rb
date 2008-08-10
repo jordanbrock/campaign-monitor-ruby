@@ -77,7 +77,7 @@ class CampaignMonitor
 
    # Takes a CampaignMonitor API method name and set of parameters;
    # returns an XmlSimple object with the response
-  def request(method, *params)
+  def request(method, params)
     response = XmlSimple.xml_in(http_get(request_url(method, params)), { 'keeproot' => false,
       'forcearray' => %w[List Campaign Subscriber Client SubscriberOpen SubscriberUnsubscribe SubscriberClick SubscriberBounce],
       'noattr' => true })
@@ -86,9 +86,11 @@ class CampaignMonitor
   end
 
   # Takes a CampaignMonitor API method name and set of parameters; returns the correct URL for the REST API.
-  def request_url(method, *params)
+  def request_url(method, params={})
     url = "#{@host}#{@api}/#{method}?ApiKey=#{@api_key}"
-    params[0][0].each_key do |key| url += "&#{key}=" + CGI::escape(params[0][0][key].to_s) end if params[0][0]
+    params.each_key do |key|
+      url += "&#{key}=" + CGI::escape(params[key].to_s)
+    end
     url
   end
 
@@ -99,8 +101,8 @@ class CampaignMonitor
 
   # By overriding the method_missing method, it is possible to easily support all of the methods
   # available in the API
-  def method_missing(method_id, *params)
-    request(method_id.id2name.gsub(/_/, '.'), params[0])
+  def method_missing(method_id, params)
+    request(method_id.id2name.gsub(/_/, '.'), params)
   end
 
   # Returns an array of Client objects associated with the API Key
