@@ -16,24 +16,22 @@ class CampaignMonitor
     #  @list = new List(12345)
     #  result = @list.add_subscriber("ralph.wiggum@simpsons.net")
     #
-    #  if result.code == 0
+    #  if result.succeeded?
     #    puts "Added Subscriber"
     #  end
     def add_subscriber(email, name = nil)
-      response = @cm_client.Subscriber_Add("ListID" => @id, "Email" => email, "Name" => name)
-      Result.new(response["Message"], response["Code"].to_i)
+      Result.new(@cm_client.Subscriber_Add("ListID" => @id, "Email" => email, "Name" => name))
     end
 
     # Example
     #  @list = new List(12345)
     #  result = @list.remove_subscriber("ralph.wiggum@simpsons.net")
     #
-    #  if result.code == 0
+    #  if result.succeeded?
     #    puts "Deleted Subscriber"
     #  end
     def remove_subscriber(email)
-      response = @cm_client.Subscriber_Unsubscribe("ListID" => @id, "Email" => email)
-      Result.new(response["Message"], response["Code"].to_i)
+      Result.new(@cm_client.Subscriber_Unsubscribe("ListID" => @id, "Email" => email))
     end
 
     # Example

@@ -168,12 +168,11 @@ class CampaignMonitor
   #  @cm = CampaignMonitor.new()
   #  result = @cm.add_subscriber(12345, "ralph.wiggum@simpsons.net", "Ralph Wiggum")
   #
-  #  if result.code == 0
+  #  if result.succeeded?
   #    puts "Subscriber Added to List"
   #  end
   def add_subscriber(list_id, email, name)
-    response = Subscriber_Add("ListID" => list_id, "Email" => email, "Name" => name)
-    Result.new(response["Message"], response["Code"].to_i)
+    Result.new(Subscriber_Add("ListID" => list_id, "Email" => email, "Name" => name))
   end
 
   # Encapsulates
