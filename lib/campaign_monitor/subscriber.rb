@@ -30,5 +30,12 @@ class CampaignMonitor
     def unsubscribe(list_id)
       Result.new(@cm_client.Subscriber_Unsubscribe("ListID" => list_id, "Email" => @email_address))
     end
+
+    def is_subscribed?(list_id)
+      result = @cm_client.Subscribers_GetIsSubscribed("ListID" => list_id, "Email" => @email_address)
+      return true if result == 'True'
+      return false if result == 'False'
+      raise "Invalid value for is_subscribed?: #{result}"
+    end
   end
 end
