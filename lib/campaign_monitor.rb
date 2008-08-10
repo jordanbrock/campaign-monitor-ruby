@@ -88,8 +88,8 @@ class CampaignMonitor
   # Takes a CampaignMonitor API method name and set of parameters; returns the correct URL for the REST API.
   def request_url(method, params={})
     url = "#{@host}#{@api}/#{method}?ApiKey=#{@api_key}"
-    params.each_key do |key|
-      url += "&#{key}=" + CGI::escape(params[key].to_s)
+    params.each_pair do |key, val|
+      url += "&#{key}=" + CGI::escape(val.to_s)
     end
     url
   end
