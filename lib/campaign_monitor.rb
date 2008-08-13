@@ -101,7 +101,7 @@ class CampaignMonitor
 
   # By overriding the method_missing method, it is possible to easily support all of the methods
   # available in the API
-  def method_missing(method_id, params)
+  def method_missing(method_id, params = {})
     request(method_id.id2name.gsub(/_/, '.'), params)
   end
 
