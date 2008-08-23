@@ -234,5 +234,10 @@ PARSER =
     p 'Using libxml-ruby'
     FasterXmlSimple
   rescue LoadError
+    begin
+      require 'rexml-expansion-fix'
+    rescue LoadError => e
+      p 'Cannot load rexml security patch'
+    end
     XmlSimple
   end
