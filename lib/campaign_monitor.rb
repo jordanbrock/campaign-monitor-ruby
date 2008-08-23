@@ -78,7 +78,7 @@ class CampaignMonitor
    # Takes a CampaignMonitor API method name and set of parameters;
    # returns an XmlSimple object with the response
   def request(method, params)
-    response = XmlSimple.xml_in(http_get(request_url(method, params)), { 'keeproot' => false,
+    response = PARSER.xml_in(http_get(request_url(method, params)), { 'keeproot' => false,
       'forcearray' => %w[List Campaign Subscriber Client SubscriberOpen SubscriberUnsubscribe SubscriberClick SubscriberBounce],
       'noattr' => true })
     response.delete('d1p1:type')
@@ -218,3 +218,21 @@ class CampaignMonitor
     end
   end
 end
+
+# If libxml is installed, we use the FasterXmlSimple library, that provides most of the functionality of XmlSimple
+# except it uses the xml/libxml library for xml parsing (rather than REXML). 
+# If libxml isn't installed, we just fall back on XmlSimple.
+
+PARSER =
+  begin
+    require 'xml/libxml'
+    # Older version of libxml aren't stable (bus error when requesting attributes that don't exist) so we
+    # have to use a version greater than '0.3.8.2'.
+    raise LoadError unless XML::Parser::VERSION > '0.3.8.2'
+    $:.push(File.join(File.dirname(__FILE__), '..', 'support', 'faster-xml-simple', 'lib'))
+    require 'faster_xml_simple' 
+    p 'Using libxml-ruby'
+    FasterXmlSimple
+  rescue LoadError
+    XmlSimple
+  end
