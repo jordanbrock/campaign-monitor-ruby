@@ -6,15 +6,15 @@ $__cm_source_patterns = [
 spec = Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.name = 'campaign_monitor'
-  s.version = "0.1.1"
+  s.version = "1.0"
   s.summary = 'Provides access to the Campaign Monitor API'
   s.description = <<-EOF
     A simple wrapper class that provides basic access to the Campaign Monitor API
   EOF
   s.author = 'Jordan Brock'
-  s.email = 'jordan@spintech.com.au'
+  s.email = 'jordanbrock@gmail.com'
   s.rubyforge_project = 'campaignmonitor'
-  s.homepage = 'http://spintech.com.au/projects/plugins/campaign_monitor'
+  s.homepage = 'http://github.com/jordanbrock/campaign-monitor-ruby/wikis'
 
   s.has_rdoc = true
   
@@ -24,7 +24,7 @@ spec = Gem::Specification.new do |s|
   s.files = $__cm_source_patterns.inject([]) { |list, glob|
   	list << Dir[glob].delete_if { |path|
       File.directory?(path) or
-      path.include?('.svn/')
+      path.include?('.git/')
     }
   }.flatten
 
