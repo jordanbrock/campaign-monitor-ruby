@@ -71,7 +71,7 @@ class CampaignMonitor
   # Replace this API key with your own (http://www.campaignmonitor.com/api/)
   def initialize(api_key=CAMPAIGN_MONITOR_API_KEY)
     @api_key = api_key
-    @host = 'http://app.campaignmonitor.com'
+    @host = 'http://api.createsend.com'
     @api = '/api/api.asmx/'
    end
 
