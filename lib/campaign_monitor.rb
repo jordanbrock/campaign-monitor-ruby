@@ -118,7 +118,7 @@ class CampaignMonitor
     response = User_GetClients()
     return [] if response.empty?
     unless response["Code"].to_i != 0
-      response["Client"].collect{|c| Client.new(c["ClientID"].to_i, c["Name"])}
+      response["Client"].collect{|c| Client.new(c["ClientID"], c["Name"])}
     else
       raise response["Code"] + " - " + response["Message"]
     end
@@ -137,7 +137,7 @@ class CampaignMonitor
     response = Client_GetCampaigns("ClientID" => client_id)
     return [] if response.empty?
     unless response["Code"].to_i != 0
-      response["Campaign"].collect{|c| Campaign.new(c["CampaignID"].to_i, c["Subject"], c["SentDate"], c["TotalRecipients"].to_i)}
+      response["Campaign"].collect{|c| Campaign.new(c["CampaignID"], c["Subject"], c["SentDate"], c["TotalRecipients"].to_i)}
     else
       raise response["Code"] + " - " + response["Message"]
     end
@@ -156,7 +156,7 @@ class CampaignMonitor
     response = Client_GetLists("ClientID" => client_id)
     return [] if response.empty?
     unless response["Code"].to_i != 0
-      response["List"].collect{|l| List.new(l["ListID"].to_i, l["Name"])}
+      response["List"].collect{|l| List.new(l["ListID"], l["Name"])}
     else
       raise response["Code"] + " - " + response["Message"]
     end
