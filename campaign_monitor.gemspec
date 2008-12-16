@@ -18,7 +18,7 @@ spec = Gem::Specification.new do |s|
   
   s.requirements << 'none'
   s.require_path = 'lib'
-
+  
   s.files = $__cm_source_patterns.inject([]) { |list, glob|
   	list << Dir[glob].delete_if { |path|
       File.directory?(path) or
