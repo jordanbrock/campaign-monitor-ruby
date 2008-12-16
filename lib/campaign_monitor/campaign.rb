@@ -22,7 +22,7 @@ class CampaignMonitor
       response = @cm_client.Campaign_GetOpens("CampaignID" => @id)
       return [] if response.empty?
       unless response["Code"].to_i != 0
-        response["SubscriberOpen"].collect{|s| SubscriberOpen.new(s["EmailAddress"], s["ListID"].to_i, s["NumberOfOpens"])}
+        response["SubscriberOpen"].collect{|s| SubscriberOpen.new(s["EmailAddress"], s["ListID"], s["NumberOfOpens"])}
       else
         raise response["Code"] + " - " + response["Message"]
       end
@@ -39,7 +39,7 @@ class CampaignMonitor
       response = @cm_client.Campaign_GetBounces("CampaignID"=> @id)
       return [] if response.empty?
       unless response["Code"].to_i != 0
-        response["SubscriberBounce"].collect{|s| SubscriberBounce.new(s["EmailAddress"], s["ListID"].to_i, s["BounceType"])}
+        response["SubscriberBounce"].collect{|s| SubscriberBounce.new(s["EmailAddress"], s["ListID"], s["BounceType"])}
       else
         raise response["Code"] + " - " + response["Message"]
       end
@@ -56,7 +56,7 @@ class CampaignMonitor
       response = @cm_client.Campaign_GetSubscriberClicks("CampaignID" => @id)
       return [] if response.empty?
       unless response["Code"].to_i != 0
-        response["SubscriberClick"].collect{|s| SubscriberClick.new(s["EmailAddress"], s["ListID"].to_i, s["ClickedLinks"])}
+        response["SubscriberClick"].collect{|s| SubscriberClick.new(s["EmailAddress"], s["ListID"], s["ClickedLinks"])}
       else
         raise response["Code"] + " - " + response["Message"]
       end
@@ -73,7 +73,7 @@ class CampaignMonitor
       response = @cm_client.Campaign_GetUnsubscribes("CampaignID" => @id)
       return [] if response.empty?
       unless response["Code"].to_i != 0
-        response["SubscriberUnsubscribe"].collect{|s| SubscriberUnsubscribe.new(s["EmailAddress"], s["ListID"].to_i)}
+        response["SubscriberUnsubscribe"].collect{|s| SubscriberUnsubscribe.new(s["EmailAddress"], s["ListID"])}
       else
         raise response["Code"] + " - " + response["Message"]
       end
