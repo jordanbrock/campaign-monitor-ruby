@@ -22,7 +22,7 @@ class CampaignMonitor
       response = @cm_client.Client_GetLists("ClientID" => @id)
       return [] if response.empty?
       unless response["Code"].to_i != 0
-        response["List"].collect{|l| List.new(l["ListID"].to_i, l["Name"])}
+        response["List"].collect{|l| List.new(l["ListID"], l["Name"])}
       else
         raise response["Code"] + " - " + response["Message"]
       end
@@ -38,7 +38,7 @@ class CampaignMonitor
     def campaigns
       response = @cm_client.Client_GetCampaigns("ClientID" => @id)
       unless response["Code"].to_i != 0
-        response["Campaign"].collect{|c| Campaign.new(c["CampaignID"].to_i, c["Subject"], c["SentDate"], c["TotalRecipients"].to_i)}
+        response["Campaign"].collect{|c| Campaign.new(c["CampaignID"], c["Subject"], c["SentDate"], c["TotalRecipients"].to_i)}
       else
         raise response["Code"] + " - " + response["Message"]
       end
