@@ -68,12 +68,16 @@ Dir[File.join(File.dirname(__FILE__), 'campaign_monitor/*.rb')].each do |f|
 end
 
 class CampaignMonitor
+  include Helpers
+
+  attr_reader :api_key, :api_url
+  
   # Replace this API key with your own (http://www.campaignmonitor.com/api/)
   def initialize(api_key=CAMPAIGN_MONITOR_API_KEY)
     @api_key = api_key
-    @host = 'http://api.createsend.com'
-    @api = '/api/api.asmx/'
+    @api_url = 'http://api.createsend.com/api/api.asmx'
    end
+   
 
    # Takes a CampaignMonitor API method name and set of parameters;
    # returns an XmlSimple object with the response
@@ -87,11 +91,8 @@ class CampaignMonitor
 
   # Takes a CampaignMonitor API method name and set of parameters; returns the correct URL for the REST API.
   def request_url(method, params={})
-    url = "#{@host}#{@api}/#{method}?ApiKey=#{@api_key}"
-    params.each_pair do |key, val|
-      url += "&#{key}=" + CGI::escape(val.to_s)
-    end
-    url
+    params.merge!('ApiKey' => api_key)
+    "#{api_url}/#{method}?#{params.to_query}"
   end
 
   # Does an HTTP GET on a given URL and returns the response body
@@ -116,14 +117,22 @@ class CampaignMonitor
   #  end
   def clients
     response = User_GetClients()
-    return [] if response.empty?
-    unless response["Code"].to_i != 0
+    handle_response(response) do
       response["Client"].collect{|c| Client.new(c["ClientID"], c["Name"])}
-    else
-      raise response["Code"] + " - " + response["Message"]
+    end
+  end
+  
+  def system_date
+    response = User_GetSystemDate()
+    handle_response(response) do
+      response
     end
   end
 
+  def parsed_system_date
+    DateTime.strptime(system_date, timestamp_format)
+  end
+  
   # Returns an array of Campaign objects associated with the specified Client ID
   #
   # Example
@@ -135,11 +144,8 @@ class CampaignMonitor
   #  end
   def campaigns(client_id)
     response = Client_GetCampaigns("ClientID" => client_id)
-    return [] if response.empty?
-    unless response["Code"].to_i != 0
+    handle_response(response) do
       response["Campaign"].collect{|c| Campaign.new(c["CampaignID"], c["Subject"], c["SentDate"], c["TotalRecipients"].to_i)}
-    else
-      raise response["Code"] + " - " + response["Message"]
     end
   end
 
@@ -154,11 +160,8 @@ class CampaignMonitor
   #  end
   def lists(client_id)
     response = Client_GetLists("ClientID" => client_id)
-    return [] if response.empty?
-    unless response["Code"].to_i != 0
+    handle_response(response) do
       response["List"].collect{|l| List.new(l["ListID"], l["Name"])}
-    else
-      raise response["Code"] + " - " + response["Message"]
     end
   end
 
@@ -217,6 +220,7 @@ class CampaignMonitor
       @list_id = list_id
     end
   end
+    
 end
 
 # If libxml is installed, we use the FasterXmlSimple library, that provides most of the functionality of XmlSimple

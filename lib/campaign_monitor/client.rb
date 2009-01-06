@@ -1,6 +1,8 @@
 class CampaignMonitor
   # Provides access to the lists and campaigns associated with a client
   class Client
+    include Helpers
+
     attr_reader :id, :name, :cm_client
 
     # Example
@@ -19,12 +21,8 @@ class CampaignMonitor
     #    puts list.name
     #  end
     def lists
-      response = @cm_client.Client_GetLists("ClientID" => @id)
-      return [] if response.empty?
-      unless response["Code"].to_i != 0
+      handle_response(cm_client.Client_GetLists("ClientID" => self.id)) do |response|
         response["List"].collect{|l| List.new(l["ListID"], l["Name"])}
-      else
-        raise response["Code"] + " - " + response["Message"]
       end
     end
 
@@ -36,11 +34,8 @@ class CampaignMonitor
     #    puts campaign.subject
     #  end
     def campaigns
-      response = @cm_client.Client_GetCampaigns("ClientID" => @id)
-      unless response["Code"].to_i != 0
+      handle_response(cm_client.Client_GetCampaigns("ClientID" => self.id)) do |response|
         response["Campaign"].collect{|c| Campaign.new(c["CampaignID"], c["Subject"], c["SentDate"], c["TotalRecipients"].to_i)}
-      else
-        raise response["Code"] + " - " + response["Message"]
       end
     end
   end

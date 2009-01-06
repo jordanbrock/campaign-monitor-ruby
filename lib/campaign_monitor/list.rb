@@ -1,7 +1,11 @@
+require 'soap/wsdlDriver'
+
 class CampaignMonitor
   # Provides access to the subscribers and info about subscribers
   # associated with a Mailing List
   class List
+    include Helpers
+    
     attr_reader :id, :name, :cm_client
 
     # Example
@@ -19,8 +23,20 @@ class CampaignMonitor
     #  if result.succeeded?
     #    puts "Added Subscriber"
     #  end
-    def add_subscriber(email, name = nil)
-      Result.new(@cm_client.Subscriber_Add("ListID" => @id, "Email" => email, "Name" => name))
+    def add_subscriber(email, name=nil, custom_fields=nil)
+      if custom_fields.nil?
+        Result.new(cm_client.Subscriber_Add("ListID" => self.id, "Email" => email, "Name" => name))
+      else
+        add_subscriber_with_custom_fields(email, name, custom_fields)
+      end
+    end
+    
+    def add_and_resubscribe(email, name=nil, custom_fields=nil)
+      if custom_fields.nil?
+        Result.new(cm_client.Subscriber_AddAndResubscribe("ListID" => self.id, "Email" => email, "Name" => name))        
+      else
+        add_and_resubscribe_with_custom_fields(email, name, custom_fields)
+      end
     end
 
     # Example
@@ -31,7 +47,39 @@ class CampaignMonitor
     #    puts "Deleted Subscriber"
     #  end
     def remove_subscriber(email)
-      Result.new(@cm_client.Subscriber_Unsubscribe("ListID" => @id, "Email" => email))
+      Result.new(cm_client.Subscriber_Unsubscribe("ListID" => self.id, "Email" => email))
+    end
+
+    # email           The subscriber's email address.
+    # name            The subscriber's name.
+    # custom_fields   A hash of field name => value pairs.
+    def add_subscriber_with_custom_fields(email, name, custom_fields)
+      response = using_soap do |driver|
+        driver.addSubscriberWithCustomFields \
+            :ApiKey       => api_key,
+            :ListID       => self.id,
+            :Email        => email,
+            :Name         => name,
+            :CustomFields => { :SubscriberCustomField => custom_fields_array(custom_fields) }
+      end
+      
+      response.subscriber_AddWithCustomFieldsResult
+    end
+
+    # email           The subscriber's email address.
+    # name            The subscriber's name.
+    # custom_fields   A hash of field name => value pairs.
+    def add_and_resubscribe_with_custom_fields(email, name, custom_fields)      
+      response = using_soap do |driver|
+        driver.addAndResubscribeWithCustomFields \
+            :ApiKey       => api_key,
+            :ListID       => self.id,
+            :Email        => email,
+            :Name         => name,
+            :CustomFields => { :SubscriberCustomField => custom_fields_array(custom_fields) }
+      end
+
+      response.subscriber_AddAndResubscribeWithCustomFieldsResult
     end
 
     # Example
@@ -43,12 +91,9 @@ class CampaignMonitor
     #    puts subscriber.email
     #  end
     def active_subscribers(date)
-      response = @cm_client.Subscribers_GetActive('ListID' => @id, "Date" => date.strftime("%Y-%m-%d %H:%M:%S"))
-      return [] if response.empty?
-      unless response["Code"].to_i != 0
-        response["Subscriber"].collect{|s| Subscriber.new(s["EmailAddress"], s["Name"], s["Date"])}
-      else
-        raise response["Code"] + " - " + response["Message"]
+      response = cm_client.Subscribers_GetActive('ListID' => self.id, 'Date' => formatted_timestamp(date))
+      handle_response(response) do
+        response['Subscriber'].collect{|s| Subscriber.new(s['EmailAddress'], s['Name'], s['Date'])}
       end
     end
 
@@ -61,12 +106,12 @@ class CampaignMonitor
     #    puts subscriber.email
     #  end
     def unsubscribed(date)
-      response = @cm_client.Subscribers_GetUnsubscribed('ListID' => @id, 'Date' => date.strftime("%Y-%m-%d %H:%M:%S"))
-      return [] if response.empty?
-      unless response["Code"].to_i != 0
-        response["Subscriber"].collect{|s| Subscriber.new(s["EmailAddress"], s["Name"], s["Date"])}
-      else
-        raise response["Code"] + " - " + response["Message"]
+      date = formatted_timestamp(date) unless date.is_a?(String)
+      
+      response = cm_client.Subscribers_GetUnsubscribed('ListID' => self.id, 'Date' => date)
+      
+      handle_response(response) do
+        response['Subscriber'].collect{|s| Subscriber.new(s['EmailAddress'], s['Name'], s['Date'])}
       end
     end
 
@@ -79,14 +124,24 @@ class CampaignMonitor
     #    puts subscriber.email
     #  end
     def bounced(date)
-      response = @cm_client.Subscribers_GetBounced('ListID' => @id, 'Date' => date.strftime("%Y-%m-%d %H:%M:%S"))
-      return [] if response.empty?
-      unless response["Code"].to_i != 0
-        response["Subscriber"].collect{|s| Subscriber.new(s["EmailAddress"], s["Name"], s["Date"])}
-      else
-        raise response["Code"] + " - " + response["Message"]
+      response = cm_client.Subscribers_GetBounced('ListID' => self.id, 'Date' => formatted_timestamp(date))
+
+      handle_response(response) do
+        response["Subscriber"].collect{|s| Subscriber.new(s["EmailAddress"], s["Name"], s["Date"])}        
       end
     end
+    
+
+    protected
+    
+      # Converts hash of custom field name/values to array of hashes for the SOAP API.
+      def custom_fields_array(custom_fields)
+        arr = []
+        custom_fields.each do |key, value|
+          arr << { "Key" => key, "Value" => value }
+        end
+        arr
+      end
 
   end
 end
