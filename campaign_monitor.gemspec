@@ -25,14 +25,15 @@ Gem::Specification.new do |s|
       'lib/campaign_monitor.rb',
       'lib/campaign_monitor/campaign.rb',
       'lib/campaign_monitor/client.rb',
+      'lib/campaign_monitor/helpers.rb',
       'lib/campaign_monitor/list.rb',
       'lib/campaign_monitor/result.rb',
       'lib/campaign_monitor/subscriber.rb',
       
       'support/faster-xml-simple/lib/faster_xml_simple.rb',
-      'support/faster-xml-simple/test/xml_simple_comparison_test.rb',
       'support/faster-xml-simple/test/regression_test.rb',
-      'support/faster-xml-simple/lib/faster_xml_simple.rb',
+      'support/faster-xml-simple/test/test_helper.rb',
+      'support/faster-xml-simple/test/xml_simple_comparison_test.rb',
       
       'test/campaign_monitor_test.rb',
     ]
