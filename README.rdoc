@@ -10,7 +10,7 @@ http://www.campaignmonitor.com.
 == Resources
 
 === Install
-+gem install patientslikeme-campaign_monitor+
+gem install patientslikeme-campaign_monitor
 
 === Git Repository
 http://github.com/patientslikeme/campaign_monitor
@@ -18,18 +18,24 @@ http://github.com/patientslikeme/campaign_monitor
 
 == Usage
 
-cm = CampaignMonitor.new # assumes you've set CAMPAIGN_MONITOR_API_KEY in your project
+  cm = CampaignMonitor.new # assumes you've set CAMPAIGN_MONITOR_API_KEY in your project
 
-for client in cm.clients
-  for list in client.lists
-    # modify a subscriber list
-    list.add_subscriber(email, name, custom_fields_hash)
-    list.remove_subscriber(email)
-    list.add_and_resubscribe(email, name, custom_fields_hash)
+  for client in cm.clients
+    for list in client.lists
+      client.name # => returns the name
     
-    # get subscriber list details
-    subscribers = list.active_subscribers(since_time)
-    unsubscribed = list.unsubscribed(since_time)
-    bounced = list.bounced(since_time)
+      # modify a subscriber list
+      list.add_subscriber(email, name, custom_fields_hash)
+      list.remove_subscriber(email)
+      list.add_and_resubscribe(email, name, custom_fields_hash)
+    
+      # get subscriber list details
+      subscribers = list.active_subscribers(since_time)
+      unsubscribed = list.unsubscribed(since_time)
+      bounced = list.bounced(since_time)
+    end
+  
+    for campaign in client.campaigns
+  
+    end
   end
-end
