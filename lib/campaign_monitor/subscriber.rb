@@ -1,8 +1,6 @@
 class CampaignMonitor
   # Provides the ability to add/remove subscribers from a list
   class Subscriber
-    include Helpers
-
     attr_accessor :email_address, :name, :date_subscribed
     attr_reader :cm_client
 

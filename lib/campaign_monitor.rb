@@ -68,8 +68,6 @@ Dir[File.join(File.dirname(__FILE__), 'campaign_monitor/*.rb')].each do |f|
 end
 
 class CampaignMonitor
-  include Helpers
-
   attr_reader :api_key, :api_url
   
   # Replace this API key with your own (http://www.campaignmonitor.com/api/)
@@ -92,7 +90,12 @@ class CampaignMonitor
   # Takes a CampaignMonitor API method name and set of parameters; returns the correct URL for the REST API.
   def request_url(method, params={})
     params.merge!('ApiKey' => api_key)
-    "#{api_url}/#{method}?#{params.to_query}"
+    
+    query = params.collect do |key, value|
+      "#{CGI.escape(key.to_s)}=#{CGI.escape(value.to_s)}"
+    end.sort * '&'
+    
+    "#{api_url}/#{method}?#{query}"
   end
 
   # Does an HTTP GET on a given URL and returns the response body
@@ -171,6 +174,40 @@ class CampaignMonitor
   def add_subscriber(list_id, email, name)
     Result.new(Subscriber_Add("ListID" => list_id, "Email" => email, "Name" => name))
   end
+  
+  
+  def handle_response(response)      
+    return [] if response.empty?
+
+    if response["Code"].to_i == 0
+      # success!
+      yield(response)
+    else
+      # error!
+      raise response["Code"] + " - " + response["Message"]
+    end      
+  end
+
+  def wsdl_driver_factory
+    SOAP::WSDLDriverFactory.new("#{api_url}?WSDL")
+  end
+
+  def using_soap
+    driver = wsdl_driver_factory.create_rpc_driver
+    response = yield(driver)
+    driver.reset_stream
+  end
+
+  def timestamp_format
+    '%Y-%m-%d %H:%M:%S'
+  end
+
+  def formatted_timestamp(datetime, format=timestamp_format)
+    datetime.strftime(format)
+  end
+
+
+
 
   # Encapsulates
   class SubscriberBounce

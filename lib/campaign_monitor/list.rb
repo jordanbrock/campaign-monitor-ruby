@@ -4,8 +4,6 @@ class CampaignMonitor
   # Provides access to the subscribers and info about subscribers
   # associated with a Mailing List
   class List
-    include Helpers
-    
     attr_reader :id, :name, :cm_client
 
     # Example
