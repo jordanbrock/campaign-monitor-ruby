@@ -1,18 +1,35 @@
 = campaign_monitor
 
-This library provides access to the Campaign Monitor API (http://www.campaignmonitor.com/api)
+This RubyGem provides access to the Campaign Monitor API (http://www.campaignmonitor.com/api).
 
 == Pre-requisites
 
-An account with Campaign Monitor and the API Key. Accounts are free and can be obtained from
-http://www.campaignmonitor.com
+An account with Campaign Monitor and the API Key. Accounts are free and can be created at
+http://www.campaignmonitor.com.
 
 == Resources
 
-Install
+=== Install
++gem install patientslikeme-campaign_monitor+
 
-* gem install patientslikeme-campaign_monitor
+=== Git Repository
+http://github.com/patientslikeme/campaign_monitor
 
-Git Repository
 
-* http://github.com/patientslikeme/campaign_monitor
+== Usage
+
+cm = CampaignMonitor.new # assumes you've set CAMPAIGN_MONITOR_API_KEY in your project
+
+for client in cm.clients
+  for list in client.lists
+    # modify a subscriber list
+    list.add_subscriber(email, name, custom_fields_hash)
+    list.remove_subscriber(email)
+    list.add_and_resubscribe(email, name, custom_fields_hash)
+    
+    # get subscriber list details
+    subscribers = list.active_subscribers(since_time)
+    unsubscribed = list.unsubscribed(since_time)
+    bounced = list.bounced(since_time)
+  end
+end

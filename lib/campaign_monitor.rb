@@ -116,17 +116,13 @@ class CampaignMonitor
   #    puts client.name
   #  end
   def clients
-    response = User_GetClients()
-    handle_response(response) do
+    handle_response(User_GetClients()) do |response|
       response["Client"].collect{|c| Client.new(c["ClientID"], c["Name"])}
     end
   end
   
   def system_date
-    response = User_GetSystemDate()
-    handle_response(response) do
-      response
-    end
+    User_GetSystemDate()
   end
 
   def parsed_system_date
@@ -143,8 +139,7 @@ class CampaignMonitor
   #    puts campaign.subject
   #  end
   def campaigns(client_id)
-    response = Client_GetCampaigns("ClientID" => client_id)
-    handle_response(response) do
+    handle_response(Client_GetCampaigns("ClientID" => client_id)) do |response|
       response["Campaign"].collect{|c| Campaign.new(c["CampaignID"], c["Subject"], c["SentDate"], c["TotalRecipients"].to_i)}
     end
   end
@@ -159,8 +154,7 @@ class CampaignMonitor
   #    puts list.name
   #  end
   def lists(client_id)
-    response = Client_GetLists("ClientID" => client_id)
-    handle_response(response) do
+    handle_response(Client_GetLists("ClientID" => client_id)) do |response|
       response["List"].collect{|l| List.new(l["ListID"], l["Name"])}
     end
   end
