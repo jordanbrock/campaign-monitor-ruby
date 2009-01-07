@@ -2,6 +2,17 @@
 
 This RubyGem provides access to the Campaign Monitor API (http://www.campaignmonitor.com/api).
 
+Campaign Monitor recently made some changes to their API.
+
+This fork makes the following changes:
+
+    * host changed from http://app.campaignmonitor.com to http://api.createsend.com
+    * ID values are no longer sent #to_i because they are hex strings
+    * added support for subscribers with custom fields using SOAP API
+    * refactored gemspec to build on github
+    * misc. cleanup and refactoring
+
+
 == Pre-requisites
 
 An account with Campaign Monitor and the API Key. Accounts are free and can be created at
