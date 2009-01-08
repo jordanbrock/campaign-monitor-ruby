@@ -1,6 +1,8 @@
 class CampaignMonitor
   # Provides access to the information about a campaign
   class Campaign
+    include CampaignMonitor::Helpers
+    
     attr_reader :id, :subject, :sent_date, :total_recipients, :cm_client
 
     def initialize(id=nil, subject=nil, sent_date=nil, total_recipients=nil)

@@ -1,6 +1,8 @@
 class CampaignMonitor
   # Provides access to the lists and campaigns associated with a client
   class Client
+    include CampaignMonitor::Helpers
+
     attr_reader :id, :name, :cm_client
 
     # Example
