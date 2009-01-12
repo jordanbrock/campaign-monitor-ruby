@@ -63,9 +63,12 @@ require 'net/http'
 require 'xmlsimple'
 require 'date'
 
-Dir[File.join(File.dirname(__FILE__), 'campaign_monitor/*.rb')].each do |f|
-  require f
-end
+require File.join(File.dirname(__FILE__), 'campaign_monitor/helpers.rb')
+require File.join(File.dirname(__FILE__), 'campaign_monitor/client.rb')
+require File.join(File.dirname(__FILE__), 'campaign_monitor/list.rb')
+require File.join(File.dirname(__FILE__), 'campaign_monitor/subscriber.rb')
+require File.join(File.dirname(__FILE__), 'campaign_monitor/result.rb')
+require File.join(File.dirname(__FILE__), 'campaign_monitor/campaign.rb')
 
 class CampaignMonitor
   include CampaignMonitor::Helpers
