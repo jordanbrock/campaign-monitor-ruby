@@ -14,6 +14,8 @@ Gem::Specification.new do |s|
   s.requirements << 'none'
   s.require_path = 'lib'
 
+  s.add_dependency 'xml-simple', ['>= 1.0.11']
+
   s.files = [
       'campaign_monitor.gemspec',
       'init.rb',
