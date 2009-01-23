@@ -13,16 +13,6 @@ class CampaignMonitor
       end      
     end
 
-    def wsdl_driver_factory
-      SOAP::WSDLDriverFactory.new("#{api_url}?WSDL")
-    end
-
-    def using_soap
-      driver = wsdl_driver_factory.create_rpc_driver
-      response = yield(driver)
-      driver.reset_stream
-    end
-
     def timestamp_format
       '%Y-%m-%d %H:%M:%S'
     end

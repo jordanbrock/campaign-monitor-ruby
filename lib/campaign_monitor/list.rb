@@ -54,9 +54,9 @@ class CampaignMonitor
     # name            The subscriber's name.
     # custom_fields   A hash of field name => value pairs.
     def add_subscriber_with_custom_fields(email, name, custom_fields)
-      response = using_soap do |driver|
+      response = cm_client.using_soap do |driver|
         driver.addSubscriberWithCustomFields \
-            :ApiKey       => api_key,
+            :ApiKey       => cm_client.api_key,
             :ListID       => self.id,
             :Email        => email,
             :Name         => name,
@@ -70,9 +70,9 @@ class CampaignMonitor
     # name            The subscriber's name.
     # custom_fields   A hash of field name => value pairs.
     def add_and_resubscribe_with_custom_fields(email, name, custom_fields)      
-      response = using_soap do |driver|
+      response = cm_client.using_soap do |driver|
         driver.addAndResubscribeWithCustomFields \
-            :ApiKey       => api_key,
+            :ApiKey       => cm_client.api_key,
             :ListID       => self.id,
             :Email        => email,
             :Name         => name,

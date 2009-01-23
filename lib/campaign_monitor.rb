@@ -180,6 +180,13 @@ class CampaignMonitor
     Result.new(Subscriber_Add("ListID" => list_id, "Email" => email, "Name" => name))
   end
   
+  def using_soap
+    driver = wsdl_driver_factory.create_rpc_driver
+    response = yield(driver)
+    driver.reset_stream
+    
+    response
+  end
 
   # Encapsulates
   class SubscriberBounce
@@ -224,6 +231,12 @@ class CampaignMonitor
     end
   end
     
+  protected
+
+    def wsdl_driver_factory
+      SOAP::WSDLDriverFactory.new("#{api_url}?WSDL")
+    end
+  
 end
 
 # If libxml is installed, we use the FasterXmlSimple library, that provides most of the functionality of XmlSimple
