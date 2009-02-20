@@ -94,10 +94,9 @@ class CampaignMonitor
     end
     
     def Create
-      raw=cm_client.List_Create(@attributes)
-      @result=Result.new(raw)
-      self.id = raw["__content__"] if raw["__content__"]
-      id ? true : false
+      @result=Result.new(cm_client.List_Create(@attributes))
+      self.id = @result.content if @result.success?
+      @result.success?
     end    
 
     # Example

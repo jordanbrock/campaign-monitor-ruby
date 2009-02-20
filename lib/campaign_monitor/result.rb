@@ -17,6 +17,10 @@ class CampaignMonitor
       !succeeded?
     end
 
+    def content
+      raw["__content__"]
+    end
+
     alias :succeeded? :success?
     alias :failure? :failed?
 
