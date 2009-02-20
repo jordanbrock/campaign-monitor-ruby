@@ -87,11 +87,15 @@ class CampaignMonitor
    # returns an XmlSimple object with the response
   def request(method, params)
     request_xml=http_get(request_url(method, params))
-    response = PARSER.xml_in(request_xml, { 'keeproot' => false,
-      'forcearray' => %w[List Campaign Subscriber Client SubscriberOpen SubscriberUnsubscribe SubscriberClick SubscriberBounce],
-      'noattr' => true })
-    response.delete('d1p1:type')
-    response
+    begin
+      response = PARSER.xml_in(request_xml, { 'keeproot' => false,
+        'forcearray' => %w[List Campaign Subscriber Client SubscriberOpen SubscriberUnsubscribe SubscriberClick SubscriberBounce],
+        'noattr' => true })
+      response.delete('d1p1:type')
+      response
+    rescue XML::Parser::ParseError
+      { "Code" => 500, "Message" => request_xml.split(/\r?\n/).first, "FullError" => request_xml }
+    end
   end
 
   # Takes a CampaignMonitor API method name and set of parameters; returns the correct URL for the REST API.

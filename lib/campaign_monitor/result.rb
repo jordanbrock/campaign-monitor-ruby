@@ -6,16 +6,23 @@ class CampaignMonitor
     def initialize(response)
       @message = response["Message"]
       @code = response["Code"].to_i
+      @raw=response
     end
 
     def success?
       code == 0
     end
 
-    alias :succeeded? :success?
-
     def failed?
       !succeeded?
     end
+
+    alias :succeeded? :success?
+    alias :failure? :failed?
+
+    def raw
+      @raw
+    end
+
   end
 end

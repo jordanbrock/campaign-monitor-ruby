@@ -49,12 +49,34 @@ class CampaignMonitorTest < Test::Unit::TestCase
     assert_equal "Just another list", list.name
   end
   
-  def test_getinfo_list
+  def test_getdetail_for_list_instance
     list=@client.lists.first
     assert_equal "List #1", list.name
     assert_nil list["ConfirmOptIn"]
     list.GetDetail
     assert_equal "false", list["ConfirmOptIn"]
+  end
+  
+  def test_getdetail_to_load_list
+    list=CampaignMonitor::List.GetDetail(@list.id)
+    assert_equal "List #1", list.name
+    list=CampaignMonitor::List[@list.id]
+    assert_equal "List #1", list.name
+  end
+  
+  # test that our own creative mapping of errors actually works
+  def test_save_with_missing_attribute
+    list = @client.new_list
+    list["Title"]="This is a new list"
+    assert !list.Create
+    assert list.result.failure?
+    assert_equal 500, list.result.code
+    assert_equal "System.InvalidOperationException: Missing parameter: UnsubscribePage.", list.result.message
+  end
+  
+  def test_getting_a_dummy_list
+    list=CampaignMonitor::List["snickers"]
+    assert_equal nil, list
   end
 
   def test_list_add_subscriber

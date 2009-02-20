@@ -53,11 +53,27 @@ class CampaignMonitor
     def save
       id ? Update : Create
     end
+
+    # Loads a list by it's ID
+    #
+    # @list = List.GetDetail(1234)
+    def self.GetDetail(id)
+      list=self.new("ListID" => id)
+      list.GetDetail(true)
+      list.result.code == 101 ? nil : list
+    end
+    
+    # loads a list by it's ID
+    #
+    # @list = List.GetDetail(1234)
+    def self.[](k)
+      GetDetail(k)
+    end
     
     def GetDetail(overwrite=false)
-      raw=cm_client.List_GetDetail("ListID" => id)
-      @attributes=raw.merge(@attributes)
-      @attributes.merge!(raw) if overwrite
+      @result=Result.new(cm_client.List_GetDetail("ListID" => id))
+      @attributes=@result.raw.merge(@attributes)
+      @attributes.merge!(@result.raw) if overwrite
     end
     
     def Update
