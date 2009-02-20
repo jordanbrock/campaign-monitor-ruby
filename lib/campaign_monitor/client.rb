@@ -14,7 +14,7 @@ class CampaignMonitor
     end
 
     def new_list
-      List.new(nil,nil,:ClientID => id)
+      List.new(:ClientID => id)
     end
 
     # Example

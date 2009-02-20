@@ -6,24 +6,47 @@ class CampaignMonitor
   class List < Base
     include CampaignMonitor::Helpers
 
-    attr_reader :id, :cm_client, :result
+    attr_reader :cm_client, :result
 
     # Example
     #  @list = new List(12345)
-    def initialize(id=nil, name=nil,attrs={})
-      defaults={"ConfirmOptIn" => "false",
-        "UnsubscribePage" => "",
-        "ConfirmationSuccessPage" => ""}
+    def initialize(attrs={})
       super
-      @id = id
-      @name = name
-      @attributes=defaults.merge(attrs)
-      self["Title"]=name if name # override for now
+      @attributes=attrs
     end
 
     # compatible with previous API
     def name
-      self["Title"]
+      self["Title"] || self["Name"]
+    end
+
+    def id
+      self["ListID"]
+    end
+
+    # Example
+    # 
+    # @list = @client.new_list.defaults
+
+    def defaults
+      defaults={"ConfirmOptIn" => "false",
+        "UnsubscribePage" => "",
+        "ConfirmationSuccessPage" => ""}
+      @attributes=defaults.merge(@attributes)
+      self
+    end
+
+    def []=(k,v)
+      if %w{Title Name}.include?(k)
+        super("Title", v)
+        super("Name", v)
+      else
+        super(k,v)
+      end
+    end
+
+    def id=(v)
+      self["ListID"]=v
     end
 
     # AR like
@@ -31,11 +54,21 @@ class CampaignMonitor
       id ? Update : Create
     end
     
+    def GetDetail(overwrite=false)
+      raw=cm_client.List_GetDetail("ListID" => id)
+      @attributes=raw.merge(@attributes)
+      @attributes.merge!(raw) if overwrite
+    end
+    
     def Update
-      # TODO: need to make sure we've loaded the full record with List_GetDetail
-      # so that we have the full component of attributes to write back to the API
-      @attributes["ListID"] ||= id
-      @result=Result.new(List_Update(@attributes))
+      # if we're dealing with a half baked object that Client#lists has given
+      # us then we need to popular all the fields before we can attempt an update
+      unless @fully_baked
+        self.GetDetail
+        @fully_baked=true
+      end
+      @result=Result.new(cm_client.List_Update(@attributes))
+      @result.success?
     end
     
     def Delete
@@ -46,8 +79,8 @@ class CampaignMonitor
     def Create
       raw=cm_client.List_Create(@attributes)
       @result=Result.new(raw)
-      @id = raw["__content__"] if raw["__content__"]
-      @id ? true : false
+      self.id = raw["__content__"] if raw["__content__"]
+      id ? true : false
     end    
 
     # Example

@@ -166,7 +166,7 @@ class CampaignMonitor
   #  end
   def lists(client_id)
     handle_response(Client_GetLists("ClientID" => client_id)) do |response|
-      response["List"].collect{|l| List.new(l["ListID"], l["Name"])}
+      response["List"].collect{|l| List.new(l)}
     end
   end
 
