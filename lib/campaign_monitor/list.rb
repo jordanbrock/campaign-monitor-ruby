@@ -6,15 +6,49 @@ class CampaignMonitor
   class List < Base
     include CampaignMonitor::Helpers
 
-    attr_reader :id, :name, :cm_client
+    attr_reader :id, :cm_client, :result
 
     # Example
     #  @list = new List(12345)
-    def initialize(id=nil, name=nil)
+    def initialize(id=nil, name=nil,attrs={})
+      defaults={"ConfirmOptIn" => "false",
+        "UnsubscribePage" => "",
+        "ConfirmationSuccessPage" => ""}
+      super
       @id = id
       @name = name
-      super
+      @attributes=defaults.merge(attrs)
+      self["Title"]=name if name # override for now
     end
+
+    # compatible with previous API
+    def name
+      self["Title"]
+    end
+
+    # AR like
+    def save
+      id ? Update : Create
+    end
+    
+    def Update
+      # TODO: need to make sure we've loaded the full record with List_GetDetail
+      # so that we have the full component of attributes to write back to the API
+      @attributes["ListID"] ||= id
+      @result=Result.new(List_Update(@attributes))
+    end
+    
+    def Delete
+      @result=Result.new(cm_client.List_Delete("ListID" => id))
+      @result.success?
+    end
+    
+    def Create
+      raw=cm_client.List_Create(@attributes)
+      @result=Result.new(raw)
+      @id = raw["__content__"] if raw["__content__"]
+      @id ? true : false
+    end    
 
     # Example
     #  @list = new List(12345)

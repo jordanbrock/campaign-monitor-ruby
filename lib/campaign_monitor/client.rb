@@ -13,6 +13,10 @@ class CampaignMonitor
       super
     end
 
+    def new_list
+      List.new(nil,nil,:ClientID => id)
+    end
+
     # Example
     #  @client = new Client(12345)
     #  @lists = @client.lists

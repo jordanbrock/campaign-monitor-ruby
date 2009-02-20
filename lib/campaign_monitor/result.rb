@@ -8,9 +8,11 @@ class CampaignMonitor
       @code = response["Code"].to_i
     end
 
-    def succeeded?
+    def success?
       code == 0
     end
+
+    alias :succeeded? :success?
 
     def failed?
       !succeeded?

@@ -39,11 +39,16 @@ class CampaignMonitorTest < Test::Unit::TestCase
     assert clients.map {|c| c.name}.include?(CLIENT_NAME), "could not find client named: #{CLIENT_NAME}"
   end
   
-  # def test_create_list
-  #   list = @client.new_list
-  #   list["Title"]="This a new list"
-  #   assert_success list.create
-  # end
+  def test_create_list
+    list = @client.new_list
+    list["Title"]="This a new list"
+    assert list.Create
+    assert_success list.result
+    assert_not_nil list.id
+    assert_equal 0, list.active_subscribers(Date.new(2005,1,1)).size
+    assert list.Delete
+    assert_success list.result
+  end
   
   def test_lists
     lists = @client.lists

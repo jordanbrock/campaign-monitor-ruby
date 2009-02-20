@@ -12,7 +12,16 @@ class CampaignMonitor
       @@client=a
     end
     
+    def [](k)
+      @attributes[k]
+    end
+    
+    def []=(k,v)
+      @attributes[k]=v
+    end
+    
     def initialize(*args)
+      @attributes={}
       @cm_client=@@client
     end
   end
