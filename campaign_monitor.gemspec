@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
       'README.rdoc',
       
       'lib/campaign_monitor.rb',
+      'lib/campaign_monitor/base.rb',
       'lib/campaign_monitor/campaign.rb',
       'lib/campaign_monitor/client.rb',
       'lib/campaign_monitor/helpers.rb',
@@ -32,12 +33,16 @@ Gem::Specification.new do |s|
       'lib/campaign_monitor/result.rb',
       'lib/campaign_monitor/subscriber.rb',
       
+      'support/class_enhancements.rb',
       'support/faster-xml-simple/lib/faster_xml_simple.rb',
       'support/faster-xml-simple/test/regression_test.rb',
       'support/faster-xml-simple/test/test_helper.rb',
       'support/faster-xml-simple/test/xml_simple_comparison_test.rb',
       
       'test/campaign_monitor_test.rb',
+      'test/client_test.rb',
+      'test/list_test.rb',
+      'test/test_helper.rb'
     ]
 
   s.test_file = 'test/campaign_monitor_test.rb'
