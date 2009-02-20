@@ -27,7 +27,6 @@ class CampaignMonitorTest < Test::Unit::TestCase
     @client["Password"]=""
     @client["AccessLevel"]=0
     
-    
     assert @client.update
     assert_success @client.result
   end
