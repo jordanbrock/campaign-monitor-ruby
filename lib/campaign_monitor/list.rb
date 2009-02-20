@@ -74,6 +74,7 @@ class CampaignMonitor
       @result=Result.new(cm_client.List_GetDetail("ListID" => id))
       @attributes=@result.raw.merge(@attributes)
       @attributes.merge!(@result.raw) if overwrite
+      @result.success?
     end
     
     def Update
