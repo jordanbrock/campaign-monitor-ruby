@@ -34,11 +34,12 @@ class CampaignMonitorTest < Test::Unit::TestCase
   
   # def test_create_and_delete_client
   #   before=@cm.clients.size
-  #   response = @cm.Client_Create(build_new_client)
-  #   puts response.inspect
+  #   client=CampaignMonitor::Client.new(build_new_client)
+  #   client.Create
+  #   assert_success client.result
   #   assert_equal before+1, @cm.clients.size 
-  #   @client_id=response["__content__"]
-  #   reponse = @cm.Client_Delete("ClientID" => @client_id)
+  #   client.Delete
+  #   assert_success client.result
   #   assert_equal before, @cm.clients.size
   # end
   
@@ -109,8 +110,8 @@ class CampaignMonitorTest < Test::Unit::TestCase
   
   protected
     def build_new_client(options={})
-      {"CompanyName" => "Spacely Space Sprockets", "ContactName" => "George Jetson", 
-        "EmailAddress" => "george@sss.com", "Country" => "United States of America",
+      {"CompanyName" => "Lick More Enterprises", "ContactName" => "George Jetson", 
+        "EmailAddress" => "george@jetson.com", "Country" => "United States of America",
         "TimeZone" => "(GMT-05:00) Indiana (East)"
         }.merge(options)
     end

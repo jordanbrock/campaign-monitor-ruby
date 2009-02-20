@@ -86,6 +86,17 @@ class CampaignMonitor
       @result=Result.new(cm_client.Client_UpdateBasics(@attributes))
       @result.success? 
     end
+
+    def Create
+      @result=Result.new(cm_client.Client_Create(@attributes))
+      self.id = @result.content 
+      @result.success?
+    end
+    
+    def Delete
+      @result=Result.new(cm_client.Client_Delete("ClientID" => id))
+      @result.success?
+    end
     
     private 
 
