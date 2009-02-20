@@ -11,10 +11,13 @@ class CampaignMonitorTest < Test::Unit::TestCase
   def setup
     @cm = CampaignMonitor.new(ENV["API_KEY"] || CAMPAIGN_MONITOR_API_KEY)   
     # find an existing client
+  
     @client=find_test_client
     assert_not_nil @client, "Please create a '#{CLIENT_NAME}' (company name) client so tests can run."
     
-    @list = @client.new_list.defaults
+    # delete all existing lists
+    @client.lists.each { |l| l.Delete }
+    @list = @client.lists.build.defaults
     @list["Title"]="List #1"
     assert @list.Create    
   end
@@ -24,9 +27,9 @@ class CampaignMonitorTest < Test::Unit::TestCase
   end
   
   def test_create_and_delete_list
-    list = @client.new_list.defaults
+    list = @client.lists.build.defaults
     list["Title"]="This is a new list"
-    assert list.Create
+    list.Create
     assert_success list.result
     assert_not_nil list.id
     assert_equal 0, list.active_subscribers(Date.new(2005,1,1)).size
@@ -43,7 +46,7 @@ class CampaignMonitorTest < Test::Unit::TestCase
   def test_update_list
     list=@client.lists.first
     assert_equal "List #1", list.name
-    list["Name"]="Just another list"
+    list["Title"]="Just another list"
     list.Update
     list=@client.lists.first
     assert_equal "Just another list", list.name
@@ -66,7 +69,7 @@ class CampaignMonitorTest < Test::Unit::TestCase
   
   # test that our own creative mapping of errors actually works
   def test_save_with_missing_attribute
-    list = @client.new_list
+    list = @client.lists.build
     list["Title"]="This is a new list"
     assert !list.Create
     assert list.result.failure?

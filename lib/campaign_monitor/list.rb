@@ -6,22 +6,18 @@ class CampaignMonitor
   class List < Base
     include CampaignMonitor::Helpers
 
-    attr_reader :cm_client, :result
+    attr_reader :cm_client
+    
+    id_field "ListID"
+    name_field "Title"
+
+    VALID_ATTRIBUTES=%w{ConfirmOptIn UnsubscribePage ConfirmationSuccessPage ListID Title}
 
     # Example
     #  @list = new List(12345)
     def initialize(attrs={})
       super
       @attributes=attrs
-    end
-
-    # compatible with previous API
-    def name
-      self["Title"] || self["Name"]
-    end
-
-    def id
-      self["ListID"]
     end
 
     # Example
@@ -34,19 +30,6 @@ class CampaignMonitor
         "ConfirmationSuccessPage" => ""}
       @attributes=defaults.merge(@attributes)
       self
-    end
-
-    def []=(k,v)
-      if %w{Title Name}.include?(k)
-        super("Title", v)
-        super("Name", v)
-      else
-        super(k,v)
-      end
-    end
-
-    def id=(v)
-      self["ListID"]=v
     end
 
     # AR like

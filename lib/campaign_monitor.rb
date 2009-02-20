@@ -63,6 +63,7 @@ require 'net/http'
 require 'xmlsimple'
 require 'date'
 
+require File.join(File.dirname(__FILE__), '../support/class_enhancements.rb')
 require File.join(File.dirname(__FILE__), 'campaign_monitor/helpers.rb')
 require File.join(File.dirname(__FILE__), 'campaign_monitor/base.rb')
 require File.join(File.dirname(__FILE__), 'campaign_monitor/client.rb')
@@ -132,7 +133,7 @@ class CampaignMonitor
   #  end
   def clients
     handle_response(User_GetClients()) do |response|
-      response["Client"].collect{|c| Client.new(c["ClientID"], c["Name"])}
+      response["Client"].collect{|c| Client.new({"ClientID" => c["ClientID"], "CompanyName" => c["Name"]})}
     end
   end
   
@@ -174,7 +175,7 @@ class CampaignMonitor
   #  end
   def lists(client_id)
     handle_response(Client_GetLists("ClientID" => client_id)) do |response|
-      response["List"].collect{|l| List.new(l)}
+      response["List"].collect{|l| List.new({"ListID" => l["ListID"], "Title" => l["Name"]})}
     end
   end
 
