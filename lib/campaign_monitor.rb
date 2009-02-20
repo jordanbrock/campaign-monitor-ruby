@@ -136,6 +136,10 @@ class CampaignMonitor
     end
   end
   
+  def new_client
+    Client.new(nil)
+  end
+  
   def system_date
     User_GetSystemDate()
   end
