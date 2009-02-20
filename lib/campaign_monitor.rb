@@ -64,6 +64,7 @@ require 'xmlsimple'
 require 'date'
 
 require File.join(File.dirname(__FILE__), 'campaign_monitor/helpers.rb')
+require File.join(File.dirname(__FILE__), 'campaign_monitor/base.rb')
 require File.join(File.dirname(__FILE__), 'campaign_monitor/client.rb')
 require File.join(File.dirname(__FILE__), 'campaign_monitor/list.rb')
 require File.join(File.dirname(__FILE__), 'campaign_monitor/subscriber.rb')
@@ -79,13 +80,14 @@ class CampaignMonitor
   def initialize(api_key=CAMPAIGN_MONITOR_API_KEY)
     @api_key = api_key
     @api_url = 'http://api.createsend.com/api/api.asmx'
+    CampaignMonitor::Base.client=self
    end
-   
 
    # Takes a CampaignMonitor API method name and set of parameters;
    # returns an XmlSimple object with the response
   def request(method, params)
-    response = PARSER.xml_in(http_get(request_url(method, params)), { 'keeproot' => false,
+    request_xml=http_get(request_url(method, params))
+    response = PARSER.xml_in(request_xml, { 'keeproot' => false,
       'forcearray' => %w[List Campaign Subscriber Client SubscriberOpen SubscriberUnsubscribe SubscriberClick SubscriberBounce],
       'noattr' => true })
     response.delete('d1p1:type')
@@ -105,7 +107,8 @@ class CampaignMonitor
 
   # Does an HTTP GET on a given URL and returns the response body
   def http_get(url)
-    Net::HTTP.get_response(URI.parse(url)).body.to_s
+    response=Net::HTTP.get_response(URI.parse(url))
+    response.body.to_s
   end
 
   # By overriding the method_missing method, it is possible to easily support all of the methods

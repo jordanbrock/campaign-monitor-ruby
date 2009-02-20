@@ -3,7 +3,7 @@ require 'soap/wsdlDriver'
 class CampaignMonitor
   # Provides access to the subscribers and info about subscribers
   # associated with a Mailing List
-  class List
+  class List < Base
     include CampaignMonitor::Helpers
 
     attr_reader :id, :name, :cm_client
@@ -13,7 +13,7 @@ class CampaignMonitor
     def initialize(id=nil, name=nil)
       @id = id
       @name = name
-      @cm_client = CampaignMonitor.new
+      super
     end
 
     # Example

@@ -1,6 +1,6 @@
 class CampaignMonitor
   # Provides access to the lists and campaigns associated with a client
-  class Client
+  class Client < Base
     include CampaignMonitor::Helpers
 
     attr_reader :id, :name, :cm_client
@@ -10,7 +10,7 @@ class CampaignMonitor
     def initialize(id, name=nil)
       @id = id
       @name = name
-      @cm_client = CampaignMonitor.new
+      super
     end
 
     # Example
