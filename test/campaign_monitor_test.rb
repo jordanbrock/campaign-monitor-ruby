@@ -43,6 +43,16 @@ class CampaignMonitorTest < Test::Unit::TestCase
     assert_equal "abcdef", @client2.cm_client.api_key
   end
   
+  def test_timezones
+    assert_equal 90, @cm.timezones.length
+  end
+
+  def test_countries
+    countries=@cm.countries
+    assert_equal 246, countries.length
+    assert countries.include?("United States of America")
+  end
+  
   
   # campaigns
   

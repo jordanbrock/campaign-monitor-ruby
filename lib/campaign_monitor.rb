@@ -149,6 +149,18 @@ class CampaignMonitor
     DateTime.strptime(system_date, timestamp_format)
   end
   
+  def countries
+    handle_response(User_GetCountries()) do | response |
+      response["string"]
+    end
+  end
+  
+  def timezones
+    handle_response(User_GetTimezones()) do | response |
+      response["string"]
+    end
+  end
+  
   # Returns an array of Campaign objects associated with the specified Client ID
   #
   # Example
