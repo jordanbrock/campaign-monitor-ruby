@@ -1,15 +1,15 @@
 require 'rubygems'
 require 'campaign_monitor'
 require 'test/unit'
+require 'test/test_helper'
 
-CAMPAIGN_MONITOR_API_KEY  = 'Your API Key'
 CLIENT_NAME               = 'Spacely Space Sprockets'
 LIST_NAME                 = 'List #1'
 
 class CampaignMonitorTest < Test::Unit::TestCase
   
   def setup
-    @cm = CampaignMonitor.new(ENV["API_KEY"] || CAMPAIGN_MONITOR_API_KEY)   
+    @cm = CampaignMonitor.new(ENV["API_KEY"])   
     # find an existing client
   
     @client=find_test_client

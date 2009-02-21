@@ -3,7 +3,6 @@ require 'campaign_monitor'
 require 'test/unit'
 require 'test/test_helper'
 
-CAMPAIGN_MONITOR_API_KEY  = 'Your API Key'
 CLIENT_NAME               = 'Spacely Space Sprockets'
 CLIENT_CONTACT_NAME       = 'George Jetson'
 LIST_NAME                 = 'List #1'
@@ -11,7 +10,7 @@ LIST_NAME                 = 'List #1'
 class CampaignMonitorTest < Test::Unit::TestCase
   
   def setup
-    @cm = CampaignMonitor.new(ENV["API_KEY"] || CAMPAIGN_MONITOR_API_KEY)   
+    @cm = CampaignMonitor.new(ENV["API_KEY"])   
     # find an existing client and make sure we know it's values
     @client=find_test_client
     assert_not_nil @client, "Please create a '#{CLIENT_NAME}' (company name) client so tests can run."
