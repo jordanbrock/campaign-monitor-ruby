@@ -201,7 +201,7 @@ class CampaignMonitor
   end
 
   # Encapsulates
-  class SubscriberBounce
+  class SubscriberBounce #:nodoc:
     attr_reader :email_address, :bounce_type, :list_id
 
     def initialize(email_address, list_id, bounce_type)
@@ -212,7 +212,7 @@ class CampaignMonitor
   end
 
   # Encapsulates
-  class SubscriberOpen
+  class SubscriberOpen #:nodoc:
     attr_reader :email_address, :list_id, :opens
 
     def initialize(email_address, list_id, opens)
@@ -223,7 +223,7 @@ class CampaignMonitor
   end
 
   # Encapsulates
-  class SubscriberClick
+  class SubscriberClick #:nodoc:
     attr_reader :email_address, :list_id, :clicked_links
 
     def initialize(email_address, list_id, clicked_links)
@@ -234,7 +234,7 @@ class CampaignMonitor
   end
 
   # Encapsulates
-  class SubscriberUnsubscribe
+  class SubscriberUnsubscribe #:nodoc:
     attr_reader :email_address, :list_id
 
     def initialize(email_address, list_id)

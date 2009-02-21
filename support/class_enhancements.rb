@@ -1,4 +1,4 @@
-class Class
+module ClassEnhancements
 
 def inherited_property(accessor, default = nil)
     instance_eval <<-RUBY, __FILE__, __LINE__ + 1
@@ -28,4 +28,8 @@ def inherited_property(accessor, default = nil)
     # end
   end
   
+end
+
+class Class #:nodoc:
+  include ClassEnhancements
 end

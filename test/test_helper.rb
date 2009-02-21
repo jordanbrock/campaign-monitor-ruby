@@ -1,4 +1,4 @@
-class Test::Unit::TestCase
+class Test::Unit::TestCase #:nodoc: all
   
   def assert_not_empty(v)
     assert !v.nil?, "expected to not be empty, but was nil"

@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/test_helper'
 
-class RegressionTest < FasterXSTest
+class RegressionTest < FasterXSTest #:nodoc: all
   def test_content_nil_regressions
     expected = {"asdf"=>{"jklsemicolon"=>{}}}
     assert_equal expected, FasterXmlSimple.xml_in("<asdf><jklsemicolon /></asdf>")
