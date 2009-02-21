@@ -18,11 +18,6 @@ end
 task :default => [:test]
 
 Rake::TestTask.new do |t|
-  if ENV["API_KEY"].nil?
-    puts "Please specify the API_KEY on the command line for testing."
-    exit
-  end
-  
   t.libs << "test"
   t.test_files = FileList['test/*_test.rb']
   t.verbose = true

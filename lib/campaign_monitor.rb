@@ -1,4 +1,18 @@
-# CampaignMonitor
+require 'rubygems'
+require 'cgi'
+require 'net/http'
+require 'xmlsimple'
+require 'date'
+
+require File.join(File.dirname(__FILE__), '../support/class_enhancements.rb')
+require File.join(File.dirname(__FILE__), 'campaign_monitor/helpers.rb')
+require File.join(File.dirname(__FILE__), 'campaign_monitor/base.rb')
+require File.join(File.dirname(__FILE__), 'campaign_monitor/client.rb')
+require File.join(File.dirname(__FILE__), 'campaign_monitor/list.rb')
+require File.join(File.dirname(__FILE__), 'campaign_monitor/subscriber.rb')
+require File.join(File.dirname(__FILE__), 'campaign_monitor/result.rb')
+require File.join(File.dirname(__FILE__), 'campaign_monitor/campaign.rb')
+
 # A wrapper class to access the Campaign Monitor API. Written using the wonderful
 # Flickr interface by Scott Raymond as a guide on how to access remote web services
 #
@@ -18,20 +32,34 @@
 #   cm.lists(client_id)
 #   cm.add_subscriber(list_id, email, name)
 #
-#  CLIENT
-#   client = Client.new(client_id)
-#   client.lists
-#   client.campaigns
+# == CLIENT
+#   client = Client[client_id] # find an existing client
+#   client = Client.new(attributes)
+#   client.Create
+#   client.Delete
+#   client.GetDetail
+#   client.UpdateAccessAndBilling
+#   client.UpdateBasics
+#   client.update # update basics, access, and billing
+#   client.lists # OR
+#   client.GetLists
+#   client.lists.build # to create a new unsaved list for a client
+#   client.campaigns # OR
+#   client.GetCampaigns 
 #
-#  LIST
-#   list = List.new(list_id)
+# == LIST
+#   list = List[list_id] # find an existing list
+#   list = List.new(attributes)
+#   list.Create
+#   list.Delete
+#   list.Update
 #   list.add_subscriber(email, name)
 #   list.remove_subscriber(email)
 #   list.active_subscribers(date)
 #   list.unsubscribed(date)
 #   list.bounced(date)
 #
-#  CAMPAIGN
+# == CAMPAIGN
 #   campaign = Campaign.new(campaign_id)
 #   campaign.clicks
 #   campaign.opens
@@ -44,36 +72,23 @@
 #   campaign.number_unsubscribes
 #
 #
-#  SUBSCRIBER
+# == SUBSCRIBER
 #   subscriber = Subscriber.new(email)
 #   subscriber.add(list_id)
 #   subscriber.unsubscribe(list_id)
 #
-#  Data Types
+# == Data Types
 #   SubscriberBounce
 #   SubscriberClick
 #   SubscriberOpen
 #   SubscriberUnsubscribe
 #   Result
 #
-
-require 'rubygems'
-require 'cgi'
-require 'net/http'
-require 'xmlsimple'
-require 'date'
-
-require File.join(File.dirname(__FILE__), '../support/class_enhancements.rb')
-require File.join(File.dirname(__FILE__), 'campaign_monitor/helpers.rb')
-require File.join(File.dirname(__FILE__), 'campaign_monitor/base.rb')
-require File.join(File.dirname(__FILE__), 'campaign_monitor/client.rb')
-require File.join(File.dirname(__FILE__), 'campaign_monitor/list.rb')
-require File.join(File.dirname(__FILE__), 'campaign_monitor/subscriber.rb')
-require File.join(File.dirname(__FILE__), 'campaign_monitor/result.rb')
-require File.join(File.dirname(__FILE__), 'campaign_monitor/campaign.rb')
-
 class CampaignMonitor
   include CampaignMonitor::Helpers
+  
+  class InvalidAPIKey < StandardError
+  end
   
   attr_reader :api_key, :api_url
   

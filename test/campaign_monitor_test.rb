@@ -33,6 +33,11 @@ class CampaignMonitorTest < Test::Unit::TestCase
     assert clients.map {|c| c.name}.include?(CLIENT_NAME), "could not find client named: #{CLIENT_NAME}"
   end
   
+  def test_invalid_key
+    @cm=CampaignMonitor.new("12345")
+    assert_raises (CampaignMonitor::InvalidAPIKey) { @cm.clients }
+  end
+  
   # we should not get confused here
   def test_can_access_two_accounts_at_once
     @cm=CampaignMonitor.new("12345")

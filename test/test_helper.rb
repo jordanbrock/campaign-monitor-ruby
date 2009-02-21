@@ -1,3 +1,8 @@
+if ENV["API_KEY"].nil?
+  puts "Please specify the API_KEY on the command line for testing."
+  exit
+end
+
 class Test::Unit::TestCase #:nodoc: all
   
   def assert_not_empty(v)

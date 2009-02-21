@@ -7,6 +7,8 @@ class CampaignMonitor
       if response["Code"].to_i == 0
         # success!
         yield(response)
+      elsif response["Code"].to_i == 100
+        raise InvalidAPIKey
       else
         # error!
         raise response["Code"] + " - " + response["Message"]
