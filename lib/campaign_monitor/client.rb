@@ -104,7 +104,7 @@ class CampaignMonitor
     # 
     #   @client=Client[12345]
     #   puts @client.name if @client.result.success?
-    def self.[]  
+    def self.[](id)
       client=self.new("ClientID" => id)
       client.GetDetail(true)
       client.result.code == 101 ? nil : client
