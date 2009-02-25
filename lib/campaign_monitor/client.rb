@@ -107,7 +107,7 @@ class CampaignMonitor
     def self.[](id)
       client=self.new("ClientID" => id)
       client.GetDetail(true)
-      client.result.code == 101 ? nil : client
+      client.result.code == 102 ? nil : client
     end
   
     # Calls Client.GetDetails
@@ -125,6 +125,7 @@ class CampaignMonitor
     #   @client["ContactName"] => "Ben Wilder"
     def GetDetail(overwrite=false)
       @result=Result.new(cm_client.Client_GetDetail("ClientID" => id))
+      return false if @result.failed?
       @flatten={}
       @flatten.merge!(@result.raw["BasicDetails"])
       @flatten.merge!(@result.raw["AccessAndBilling"])
@@ -132,7 +133,8 @@ class CampaignMonitor
       # map {} to nil - some weird XML converstion issue?
       @flatten=@flatten.inject({}) { |sum,a| sum[a[0]]=a[1]=={} ? nil : a[1]; sum }
       @attributes=@flatten.merge(@attributes)
-      @attributes.merge!(@flatten.raw) if overwrite
+      @attributes.merge!(@flatten) if overwrite
+      @fully_baked=true if @result.success?
       @result.success?
     end
     
@@ -194,7 +196,7 @@ class CampaignMonitor
     #   @client.Create
     def Create
       @result=Result.new(cm_client.Client_Create(@attributes))
-      self.id = @result.content 
+      self.id = @result.content if @result.success?
       @result.success?
     end
 
