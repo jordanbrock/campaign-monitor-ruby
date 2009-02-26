@@ -96,6 +96,10 @@ class CampaignMonitor
 
     alias campaigns GetCampaigns
     
+    def new_campaign(attrs={})
+      Campaign.new(attrs.merge("ClientID" => self.id))
+    end
+    
     
     # Calls Client.GetDetails to load a specific client
     # Client#result will have the result of the API call

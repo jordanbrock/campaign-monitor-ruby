@@ -33,6 +33,9 @@ class CampaignMonitor
     id_field "CampaignID"
     name_field "Subject"
     
+    class MissingParameter < StandardError
+    end
+    
 #    attr_reader :id, :subject, :sent_date, :total_recipients, :cm_client
 
     data_types "TotalRecipients" => "to_i"
@@ -42,6 +45,35 @@ class CampaignMonitor
     def initialize(attrs={})
       super
       @attributes=attrs
+    end
+
+    def Create
+      required_params=%w{CampaignName CampaignSubject FromName FromEmail ReplyTo HtmlUrl TextUrl}
+      required_params.each do |f|
+        raise MissingParameter, "'#{f}' is required to call Create" unless self[f]
+      end
+      response = cm_client.using_soap do |driver|
+        opts=attributes.merge(:ApiKey => cm_client.api_key, :SubscriberListIDs => @lists.map {|x| x.id})
+        driver.createCampaign opts
+      end
+      @result=Result.new(response["Campaign.CreateResult"])
+      self.id=@result.content if @result.success?
+      @result.success?
+    end
+    
+    def Send(options={})
+      required_params=%w{ConfirmationEmail SendDate}
+      required_params.each do |f|
+        raise MissingParameter, "'#{f}' is required to call Send" unless options[f]
+      end
+      options.merge!("CampaignID" => self.id)
+      @result=Result.new(@cm_client.Campaign_Send(options))
+      @result.success?
+    end
+
+    def add_list(list)
+      @lists||=[]
+      @lists << list
     end
 
     # Example
@@ -102,56 +134,35 @@ class CampaignMonitor
 
     def GetSummary
       @result=Result.new(cm_client.Campaign_GetSummary('CampaignID' => self.id))
-      @summary=@result.raw if @result.success?
+      @summary=parse_summary(@result.raw) if @result.success?
       @result.success?
     end
 
-    # Example
-    #  @campaign = Campaign.new(12345)
-    #  puts @campaign.number_recipients
-    def number_recipients
-      @number_recipients ||= summary[:number_recipients]
+    # hook up the old API calls
+    def method_missing(m, *args)
+      if %w{number_bounced number_unsubscribed number_clicks number_opened number_recipients}.include?(m.to_s)
+        summary[m]
+      else
+        super
+      end
     end
 
-    # Example
-    #  @campaign = Campaign.new(12345)
-    #  puts @campaign.number_opened
-    def number_opened
-      @number_opened ||= summary[:number_opened]
-    end
-
-    # Example
-    #  @campaign = Campaign.new(12345)
-    #  puts @campaign.number_clicks
-    def number_clicks
-      @number_clicks ||= summary[:number_clicks]
-    end
-
-    # Example
-    #  @campaign = Campaign.new(12345)
-    #  puts @campaign.number_unsubscribed
-    def number_unsubscribed
-      @number_unsubscribed ||= summary[:number_unsubscribed]
-    end
-
-    # Example
-    #  @campaign = Campaign.new(12345)
-    #  puts @campaign.number_bounced
-    def number_bounced
-      @number_bounced ||= summary[:number_bounced]
+    def summary(refresh=false)
+      self.GetSummary if refresh or @summary.nil?
+      @summary
     end
 
     private
-      def summary
-        if @summary.nil?
-          summary = cm_client.Campaign_GetSummary('CampaignID' => self.id)
-          @summary = {
-            :number_recipients   => summary['Recipients'].to_i,
-            :number_opened       => summary['TotalOpened'].to_i,
-            :number_clicks       => summary['Click'].to_i,
-            :number_unsubscribed => summary['Unsubscribed'].to_i,
-            :number_bounced      => summary['Bounced'].to_i
-          }
+      def parse_summary(summary)
+        @summary = {
+          :number_recipients   => summary['Recipients'].to_i,
+          :number_opened       => summary['TotalOpened'].to_i,
+          :number_clicks       => summary['Clicks'].to_i,
+          :number_unsubscribed => summary['Unsubscribed'].to_i,
+          :number_bounced      => summary['Bounced'].to_i
+        }
+        summary.each do |key, value|
+          @summary[key]=value.to_i
         end
         @summary
       end

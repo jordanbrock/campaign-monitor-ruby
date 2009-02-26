@@ -18,6 +18,9 @@ class CampaignMonitor
     end
 
     def content
+      # if we're a string (likely from SOAP)
+      return raw if raw.is_a?(String)
+      # if we're a hash
       raw["__content__"]
     end
 

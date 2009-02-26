@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'campaign_monitor'
-  s.version     = "1.3.0"
+  s.version     = "1.3.2"
   s.summary     = 'Provides access to the Campaign Monitor API.'
   s.description = <<-EOF
     A simple wrapper class that provides basic access to the Campaign Monitor API.
@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
 
   s.add_dependency 'xml-simple', ['>= 1.0.11']
+  s.add_dependency 'soapr4', ['>= 1.5.8']
 
   s.files = [
       'campaign_monitor.gemspec',

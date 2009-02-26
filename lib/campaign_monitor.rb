@@ -3,6 +3,7 @@ require 'cgi'
 require 'net/http'
 require 'xmlsimple'
 require 'date'
+gem 'soap4r'
 
 require File.join(File.dirname(__FILE__), '../support/class_enhancements.rb')
 require File.join(File.dirname(__FILE__), 'campaign_monitor/helpers.rb')
@@ -110,7 +111,8 @@ class CampaignMonitor
       response.delete('d1p1:type')
       response.delete("d1p1:http://www.w3.org/2001/XMLSchema-instance:type")
       response
-    rescue XML::Parser::ParseError
+    # rescue XML::Parser::ParseError
+    rescue XML::Error
       { "Code" => 500, "Message" => request_xml.split(/\r?\n/).first, "FullError" => request_xml }
     end
   end
@@ -225,6 +227,7 @@ class CampaignMonitor
   
   def using_soap
     driver = wsdl_driver_factory.create_rpc_driver
+    driver.wiredump_dev = STDERR if $debug
     response = yield(driver)
     driver.reset_stream
     
