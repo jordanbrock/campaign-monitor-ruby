@@ -11,7 +11,7 @@ class CampaignMonitor
         raise InvalidAPIKey
       else
         # error!
-        raise response["Code"] + " - " + response["Message"]
+        raise ApiError, response["Code"] + ": " + response["Message"]
       end      
     end
 

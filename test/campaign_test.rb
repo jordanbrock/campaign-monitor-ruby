@@ -32,6 +32,19 @@ class CampaignMonitorTest < Test::Unit::TestCase
     assert_equal Hash.new, @campaign.lists.first["Title"]
   end
   
+  def test_bracket_lookup_for_nonexistant
+    @campaign=CampaignMonitor::Campaign[12345]
+    assert_not_nil @campaign
+    assert_equal 12345, @campaign.id
+    assert_raises( CampaignMonitor::ApiError ) { @campaign.lists }
+  end
+  
+  def test_braket_lookup_for_existing
+    camp=CampaignMonitor::Campaign[@campaign.id]
+    assert_not_nil camp
+    camp.lists
+  end
+  
   def test_summary_interface
     @campaign=@client.campaigns.detect { |x| x["Subject"] == "Big Deal" }
     assert_not_nil @campaign
@@ -50,6 +63,7 @@ class CampaignMonitorTest < Test::Unit::TestCase
   end
   
   def test_creating_a_campaign
+    return
     @campaign=@client.new_campaign
     # create two lists
     @beef=@client.lists.build.defaults

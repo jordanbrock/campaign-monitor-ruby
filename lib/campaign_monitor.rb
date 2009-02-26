@@ -91,6 +91,9 @@ class CampaignMonitor
   
   class InvalidAPIKey < StandardError
   end
+
+  class ApiError < StandardError
+  end
   
   attr_reader :api_key, :api_url
   
