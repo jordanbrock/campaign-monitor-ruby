@@ -48,8 +48,6 @@ class CampaignMonitor
     # we will assume if something isn't a basic attribute that it's a AccessAndBilling attribute
     BASIC_ATTRIBUTES=%w{CompanyName ContactName EmailAddress Country Timezone}
 
-    attr_reader :cm_client
-
     # Creates a new client that you can later create (or load)
     # The prefered way to load a client is using Client#[] however
     #

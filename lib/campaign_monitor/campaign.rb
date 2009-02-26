@@ -33,12 +33,8 @@ class CampaignMonitor
     class MissingParameter < StandardError
     end
     
-#    attr_reader :id, :subject, :sent_date, :total_recipients, :cm_client
-
     data_types "TotalRecipients" => "to_i"
 
-    attr_reader :cm_client
-    
     def initialize(attrs={})
       super
       @attributes=attrs

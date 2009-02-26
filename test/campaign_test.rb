@@ -14,19 +14,19 @@ class CampaignMonitorTest < Test::Unit::TestCase
     # find an existing client and make sure we know it's values
     @client=find_test_client(@cm.clients)
     assert_not_nil @client, "Please create a '#{CLIENT_NAME}' (company name) client so tests can run."
+
+    @campaign=@client.campaigns.detect { |x| x["Subject"] == "Big Deal" }
+    assert_not_nil @campaign, "Please create a campaign named 'Big Deal' so tests can run."
     
     # delete all existing lists
     @client.lists.each { |l| l.Delete }
     @list = @client.lists.build.defaults
   end
   
-  
   def teardown
   end
 
   def test_finds_named_campaign
-    @campaign=@client.campaigns.detect { |x| x["Subject"] == "Big Deal" }
-    assert_not_nil @campaign
     assert_equal 1, @campaign["TotalRecipients"]
     assert_equal 1, @campaign.lists.size
     assert_equal Hash.new, @campaign.lists.first["Title"]
@@ -50,7 +50,6 @@ class CampaignMonitorTest < Test::Unit::TestCase
   end
   
   def test_creating_a_campaign
-    return
     @campaign=@client.new_campaign
     # create two lists
     @beef=@client.lists.build.defaults

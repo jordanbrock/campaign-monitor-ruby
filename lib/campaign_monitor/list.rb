@@ -6,8 +6,6 @@ class CampaignMonitor
   class List < Base
     include CampaignMonitor::Helpers
 
-    attr_reader :cm_client
-    
     id_field "ListID"
     name_field "Title"
 
