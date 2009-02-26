@@ -24,9 +24,6 @@ class CampaignMonitor
   # * Campaign.GetSubscriberClicks
   # * Campaign.GetUnsubscribes
   # * Campaign.GetSummary
-  # 
-  # === Not yet supported
-  #
   #
   class Campaign < Base
     include CampaignMonitor::Helpers
@@ -71,9 +68,19 @@ class CampaignMonitor
       @result.success?
     end
 
-    def add_list(list)
+    def GetLists
+      handle_response(@cm_client.Campaign_GetLists(:CampaignID => id)) do |response|
+        @result=Result.new(response)
+        if @result.success?
+          @lists=response["List"].collect{|l| List.new({"ListID" => l["ListID"], "Title" => l["Name"]})}
+        end
+      end
+    end
+
+    def lists
+      # pull down the list of lists if we have an id
+      self.GetLists if @lists.nil? and id
       @lists||=[]
-      @lists << list
     end
 
     # Example

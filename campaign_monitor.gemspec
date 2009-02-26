@@ -24,9 +24,11 @@ Gem::Specification.new do |s|
       'MIT-LICENSE',
       'Rakefile',
       'README.rdoc',
+      'TODO',
       
       'lib/campaign_monitor.rb',
       'lib/campaign_monitor/base.rb',
+      'lib/campaign_monitor/misc.rb',
       'lib/campaign_monitor/campaign.rb',
       'lib/campaign_monitor/client.rb',
       'lib/campaign_monitor/helpers.rb',
@@ -41,6 +43,7 @@ Gem::Specification.new do |s|
       'support/faster-xml-simple/test/xml_simple_comparison_test.rb',
       
       'test/campaign_monitor_test.rb',
+      'test/campaign_test.rb',
       'test/client_test.rb',
       'test/list_test.rb',
       'test/test_helper.rb'

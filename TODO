@@ -1,0 +1,6 @@
+* Decide on convents about when to raise and when to return true/false
+
+  So far I've kind of taken the stance if we're retrieving a list and there
+  are only two possible failures (APIKey or primary key) to raise if there
+  is an error but for update/save/create operations to return true/false
+  and then let the user probe @object.result for more details

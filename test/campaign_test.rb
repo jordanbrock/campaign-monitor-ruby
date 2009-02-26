@@ -28,6 +28,8 @@ class CampaignMonitorTest < Test::Unit::TestCase
     @campaign=@client.campaigns.detect { |x| x["Subject"] == "Big Deal" }
     assert_not_nil @campaign
     assert_equal 1, @campaign["TotalRecipients"]
+    assert_equal 1, @campaign.lists.size
+    assert_equal Hash.new, @campaign.lists.first["Title"]
   end
   
   def test_summary_interface
@@ -60,8 +62,8 @@ class CampaignMonitorTest < Test::Unit::TestCase
     @chicken.Create
     assert_success @chicken.result
 
-    @campaign.add_list @beef
-    @campaign.add_list @chicken
+    @campaign.lists << @beef
+    @campaign.lists << @chicken
     @campaign["CampaignName"]="Noodles #{secure_digest(Time.now.to_s)}"
     @campaign["CampaignSubject"]="Noodly #{secure_digest(Time.now.to_s)}"
     puts @campaign.inspect
@@ -75,10 +77,12 @@ class CampaignMonitorTest < Test::Unit::TestCase
     assert_success @campaign.result
     assert_not_nil @campaign.id
     assert_equal 32, @campaign.id.length
+    # test GetLists
+    @campaign.instance_variable_set("@lists",nil)
+    assert_equal 2, @campaign.lists.size
     # test sending
     @campaign.Send("ConfirmationEmail" => "george@aol.com", "SendDate" => "Immediately")
     assert_success @campaign.result
-    
   end
   
   def test_GetSummary
