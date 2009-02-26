@@ -37,9 +37,10 @@ class CampaignMonitorTest < Test::Unit::TestCase
     assert_not_nil @campaign
     assert_equal 12345, @campaign.id
     assert_raises( CampaignMonitor::ApiError ) { @campaign.lists }
+    assert_raises( CampaignMonitor::ApiError ) { @campaign.GetSummary }
   end
   
-  def test_braket_lookup_for_existing
+  def test_bracket_lookup_for_existing
     camp=CampaignMonitor::Campaign[@campaign.id]
     assert_not_nil camp
     camp.lists

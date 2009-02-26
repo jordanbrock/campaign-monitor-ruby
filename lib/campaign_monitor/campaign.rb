@@ -193,17 +193,19 @@ class CampaignMonitor
       end
     end
 
-    # Calls Campaign.GetSummary.  Often you probably should just use Campaign#summary
-    # It will return true if successful and false if not.
+    # Calls Campaign.GetSummary.  OYou probably should just use Campaign#summary which caches results
+    # It will raise ApiError if an error occurs
     # Campaign#result will have the result of the API call
     #
     # Example
     #   @camp=@client.campaigns.first
-    #   @camp.GetSummary
+    #   @camp.GetSummary["Clicks"]
     def GetSummary
-      @result=Result.new(cm_client.Campaign_GetSummary('CampaignID' => self.id))
-      @summary=parse_summary(@result.raw) if @result.success?
-      @result.success?
+      handle_response(cm_client.Campaign_GetSummary('CampaignID' => self.id)) do |response|
+        @result=Result.new(response)
+        @summary=parse_summary(@result.raw)
+      end
+      @summary
     end
 
     # Convenience method for accessing summary details of a campaign
