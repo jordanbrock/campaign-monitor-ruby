@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
 
   s.add_dependency 'xml-simple', ['>= 1.0.11']
-  s.add_dependency 'soapr4', ['>= 1.5.8']
+  s.add_dependency 'soap4r', ['>= 1.5.8']
 
   s.files = [
       'campaign_monitor.gemspec',
