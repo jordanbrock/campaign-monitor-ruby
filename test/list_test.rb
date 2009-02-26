@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'campaign_monitor'
+require 'lib/campaign_monitor'
 require 'test/unit'
 require 'test/test_helper'
 
@@ -7,6 +7,8 @@ CLIENT_NAME               = 'Spacely Space Sprockets'
 LIST_NAME                 = 'List #1'
 
 class CampaignMonitorTest < Test::Unit::TestCase
+  
+  $debug=true
   
   def setup
     @cm = CampaignMonitor.new(ENV["API_KEY"])   

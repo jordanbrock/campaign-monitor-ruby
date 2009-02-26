@@ -108,6 +108,7 @@ class CampaignMonitor
         'forcearray' => %w[List Campaign Subscriber Client SubscriberOpen SubscriberUnsubscribe SubscriberClick SubscriberBounce],
         'noattr' => true })
       response.delete('d1p1:type')
+      response.delete("d1p1:http://www.w3.org/2001/XMLSchema-instance:type")
       response
     rescue XML::Parser::ParseError
       { "Code" => 500, "Message" => request_xml.split(/\r?\n/).first, "FullError" => request_xml }
@@ -190,7 +191,7 @@ class CampaignMonitor
   #  end
   def campaigns(client_id)
     handle_response(Client_GetCampaigns("ClientID" => client_id)) do |response|
-      response["Campaign"].collect{|c| Campaign.new(c["CampaignID"], c["Subject"], c["SentDate"], c["TotalRecipients"].to_i)}
+      response["Campaign"].collect{|c| Campaign.new(c) }
     end
   end
 

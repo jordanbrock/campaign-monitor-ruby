@@ -1,3 +1,5 @@
+CAMPAIGN_MONITOR_API_KEY=nil
+
 if ENV["API_KEY"].nil?
   puts "Please specify the API_KEY on the command line for testing."
   exit

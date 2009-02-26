@@ -1,12 +1,12 @@
 class CampaignMonitor
   # Encapsulates the response received from the CampaignMonitor webservice.
   class Result
-    attr_reader :message, :code
+    attr_reader :message, :code, :raw
 
     def initialize(response)
       @message = response["Message"]
       @code = response["Code"].to_i
-      @raw=response
+      @raw = response
     end
 
     def success?
@@ -14,7 +14,7 @@ class CampaignMonitor
     end
 
     def failed?
-      !succeeded?
+      not success?
     end
 
     def content
@@ -23,10 +23,6 @@ class CampaignMonitor
 
     alias :succeeded? :success?
     alias :failure? :failed?
-
-    def raw
-      @raw
-    end
 
   end
 end

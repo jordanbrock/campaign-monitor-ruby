@@ -2,7 +2,7 @@ class CampaignMonitor
   # Provides access to the lists and campaigns associated with a client
   class Base
 
-    attr_reader :result
+    attr_reader :result, :attributes
 
     @@client=nil
 

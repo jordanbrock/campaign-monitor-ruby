@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'campaign_monitor'
+require 'lib/campaign_monitor'
 require 'test/unit'
 require 'test/test_helper'
 
