@@ -138,7 +138,13 @@ class CampaignMonitor
       def custom_fields_array(custom_fields)
         arr = []
         custom_fields.each do |key, value|
-          arr << { "Key" => key, "Value" => value }
+          if value.is_a? Array
+            value.each do |array_value|
+              arr << { "Key" => key, "Value" => array_value }
+            end
+          else
+            arr << { "Key" => key, "Value" => value }
+          end
         end
         arr
       end
