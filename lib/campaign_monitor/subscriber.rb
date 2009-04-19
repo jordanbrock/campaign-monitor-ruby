@@ -1,16 +1,15 @@
 class CampaignMonitor
   # Provides the ability to add/remove subscribers from a list
-  class Subscriber
+  class Subscriber < Base
     include CampaignMonitor::Helpers
 
     attr_accessor :email_address, :name, :date_subscribed
-    attr_reader :cm_client
 
     def initialize(email_address, name=nil, date=nil)
       @email_address = email_address
       @name = name
       @date_subscribed = date_subscribed
-      @cm_client = CampaignMonitor.new
+      super
     end
 
     # Example

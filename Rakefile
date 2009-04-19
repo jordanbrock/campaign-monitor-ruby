@@ -15,9 +15,11 @@ task :install => [:package] do
   sh %{sudo gem install pkg/#{spec.name}-#{spec.version}}
 end
 
+task :default => [:test]
+
 Rake::TestTask.new do |t|
   t.libs << "test"
-  t.test_files = FileList['test/test*.rb']
+  t.test_files = FileList['test/*_test.rb']
   t.verbose = true
 end
 

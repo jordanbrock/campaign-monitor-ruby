@@ -1,4 +1,20 @@
-# CampaignMonitor
+require 'rubygems'
+require 'cgi'
+require 'net/http'
+require 'xmlsimple'
+require 'date'
+gem 'soap4r'
+
+require File.join(File.dirname(__FILE__), '../support/class_enhancements.rb')
+require File.join(File.dirname(__FILE__), 'campaign_monitor/helpers.rb')
+require File.join(File.dirname(__FILE__), 'campaign_monitor/misc.rb')
+require File.join(File.dirname(__FILE__), 'campaign_monitor/base.rb')
+require File.join(File.dirname(__FILE__), 'campaign_monitor/client.rb')
+require File.join(File.dirname(__FILE__), 'campaign_monitor/list.rb')
+require File.join(File.dirname(__FILE__), 'campaign_monitor/subscriber.rb')
+require File.join(File.dirname(__FILE__), 'campaign_monitor/result.rb')
+require File.join(File.dirname(__FILE__), 'campaign_monitor/campaign.rb')
+
 # A wrapper class to access the Campaign Monitor API. Written using the wonderful
 # Flickr interface by Scott Raymond as a guide on how to access remote web services
 #
@@ -18,20 +34,34 @@
 #   cm.lists(client_id)
 #   cm.add_subscriber(list_id, email, name)
 #
-#  CLIENT
-#   client = Client.new(client_id)
-#   client.lists
-#   client.campaigns
+# == CLIENT
+#   client = Client[client_id] # find an existing client
+#   client = Client.new(attributes)
+#   client.Create
+#   client.Delete
+#   client.GetDetail
+#   client.UpdateAccessAndBilling
+#   client.UpdateBasics
+#   client.update # update basics, access, and billing
+#   client.lists # OR
+#   client.GetLists
+#   client.lists.build # to create a new unsaved list for a client
+#   client.campaigns # OR
+#   client.GetCampaigns 
 #
-#  LIST
-#   list = List.new(list_id)
+# == LIST
+#   list = List[list_id] # find an existing list
+#   list = List.new(attributes)
+#   list.Create
+#   list.Delete
+#   list.Update
 #   list.add_subscriber(email, name)
 #   list.remove_subscriber(email)
 #   list.active_subscribers(date)
 #   list.unsubscribed(date)
 #   list.bounced(date)
 #
-#  CAMPAIGN
+# == CAMPAIGN
 #   campaign = Campaign.new(campaign_id)
 #   campaign.clicks
 #   campaign.opens
@@ -44,34 +74,26 @@
 #   campaign.number_unsubscribes
 #
 #
-#  SUBSCRIBER
+# == SUBSCRIBER
 #   subscriber = Subscriber.new(email)
 #   subscriber.add(list_id)
 #   subscriber.unsubscribe(list_id)
 #
-#  Data Types
+# == Data Types
 #   SubscriberBounce
 #   SubscriberClick
 #   SubscriberOpen
 #   SubscriberUnsubscribe
 #   Result
 #
-
-require 'rubygems'
-require 'cgi'
-require 'net/http'
-require 'xmlsimple'
-require 'date'
-
-require File.join(File.dirname(__FILE__), 'campaign_monitor/helpers.rb')
-require File.join(File.dirname(__FILE__), 'campaign_monitor/client.rb')
-require File.join(File.dirname(__FILE__), 'campaign_monitor/list.rb')
-require File.join(File.dirname(__FILE__), 'campaign_monitor/subscriber.rb')
-require File.join(File.dirname(__FILE__), 'campaign_monitor/result.rb')
-require File.join(File.dirname(__FILE__), 'campaign_monitor/campaign.rb')
-
 class CampaignMonitor
   include CampaignMonitor::Helpers
+  
+  class InvalidAPIKey < StandardError
+  end
+
+  class ApiError < StandardError
+  end
   
   attr_reader :api_key, :api_url
   
@@ -79,17 +101,24 @@ class CampaignMonitor
   def initialize(api_key=CAMPAIGN_MONITOR_API_KEY)
     @api_key = api_key
     @api_url = 'http://api.createsend.com/api/api.asmx'
+    CampaignMonitor::Base.client=self
    end
-   
 
    # Takes a CampaignMonitor API method name and set of parameters;
    # returns an XmlSimple object with the response
   def request(method, params)
-    response = PARSER.xml_in(http_get(request_url(method, params)), { 'keeproot' => false,
-      'forcearray' => %w[List Campaign Subscriber Client SubscriberOpen SubscriberUnsubscribe SubscriberClick SubscriberBounce],
-      'noattr' => true })
-    response.delete('d1p1:type')
-    response
+    request_xml=http_get(request_url(method, params))
+    begin
+      response = PARSER.xml_in(request_xml, { 'keeproot' => false,
+        'forcearray' => %w[List Campaign Subscriber Client SubscriberOpen SubscriberUnsubscribe SubscriberClick SubscriberBounce],
+        'noattr' => true })
+      response.delete('d1p1:type')
+      response.delete("d1p1:http://www.w3.org/2001/XMLSchema-instance:type")
+      response
+    # rescue XML::Parser::ParseError
+    rescue XML::Error
+      { "Code" => 500, "Message" => request_xml.split(/\r?\n/).first, "FullError" => request_xml }
+    end
   end
 
   # Takes a CampaignMonitor API method name and set of parameters; returns the correct URL for the REST API.
@@ -105,13 +134,17 @@ class CampaignMonitor
 
   # Does an HTTP GET on a given URL and returns the response body
   def http_get(url)
-    Net::HTTP.get_response(URI.parse(url)).body.to_s
+    response=Net::HTTP.get_response(URI.parse(url))
+    response.body.to_s
   end
 
   # By overriding the method_missing method, it is possible to easily support all of the methods
   # available in the API
   def method_missing(method_id, params = {})
-    request(method_id.id2name.gsub(/_/, '.'), params)
+    puts "  CM: #{method_id} (#{params.inspect})" if $debug
+    res=request(method_id.id2name.gsub(/_/, '.'), params)
+    puts "    returning: #{res.inspect}" if $debug
+    res
   end
 
   # Returns an array of Client objects associated with the API Key
@@ -125,8 +158,12 @@ class CampaignMonitor
   #  end
   def clients
     handle_response(User_GetClients()) do |response|
-      response["Client"].collect{|c| Client.new(c["ClientID"], c["Name"])}
+      response["Client"].collect{|c| Client.new({"ClientID" => c["ClientID"], "CompanyName" => c["Name"]})}
     end
+  end
+  
+  def new_client
+    Client.new(nil)
   end
   
   def system_date
@@ -135,6 +172,18 @@ class CampaignMonitor
 
   def parsed_system_date
     DateTime.strptime(system_date, timestamp_format)
+  end
+  
+  def countries
+    handle_response(User_GetCountries()) do | response |
+      response["string"]
+    end
+  end
+  
+  def timezones
+    handle_response(User_GetTimezones()) do | response |
+      response["string"]
+    end
   end
   
   # Returns an array of Campaign objects associated with the specified Client ID
@@ -148,7 +197,7 @@ class CampaignMonitor
   #  end
   def campaigns(client_id)
     handle_response(Client_GetCampaigns("ClientID" => client_id)) do |response|
-      response["Campaign"].collect{|c| Campaign.new(c["CampaignID"], c["Subject"], c["SentDate"], c["TotalRecipients"].to_i)}
+      response["Campaign"].collect{|c| Campaign.new(c) }
     end
   end
 
@@ -163,7 +212,7 @@ class CampaignMonitor
   #  end
   def lists(client_id)
     handle_response(Client_GetLists("ClientID" => client_id)) do |response|
-      response["List"].collect{|l| List.new(l["ListID"], l["Name"])}
+      response["List"].collect{|l| List.new({"ListID" => l["ListID"], "Title" => l["Name"]})}
     end
   end
 
@@ -182,55 +231,13 @@ class CampaignMonitor
   
   def using_soap
     driver = wsdl_driver_factory.create_rpc_driver
+    driver.wiredump_dev = STDERR if $debug
     response = yield(driver)
     driver.reset_stream
     
     response
   end
 
-  # Encapsulates
-  class SubscriberBounce
-    attr_reader :email_address, :bounce_type, :list_id
-
-    def initialize(email_address, list_id, bounce_type)
-      @email_address = email_address
-      @bounce_type = bounce_type
-      @list_id = list_id
-    end
-  end
-
-  # Encapsulates
-  class SubscriberOpen
-    attr_reader :email_address, :list_id, :opens
-
-    def initialize(email_address, list_id, opens)
-      @email_address = email_address
-      @list_id = list_id
-      @opens = opens
-    end
-  end
-
-  # Encapsulates
-  class SubscriberClick
-    attr_reader :email_address, :list_id, :clicked_links
-
-    def initialize(email_address, list_id, clicked_links)
-      @email_address = email_address
-      @list_id = list_id
-      @clicked_links = clicked_links
-    end
-  end
-
-  # Encapsulates
-  class SubscriberUnsubscribe
-    attr_reader :email_address, :list_id
-
-    def initialize(email_address, list_id)
-      @email_address = email_address
-      @list_id = list_id
-    end
-  end
-    
   protected
 
     def wsdl_driver_factory

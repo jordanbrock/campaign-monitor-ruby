@@ -3,18 +3,82 @@ require 'soap/wsdlDriver'
 class CampaignMonitor
   # Provides access to the subscribers and info about subscribers
   # associated with a Mailing List
-  class List
+  class List < Base
     include CampaignMonitor::Helpers
 
-    attr_reader :id, :name, :cm_client
+    id_field "ListID"
+    name_field "Title"
+
+    VALID_ATTRIBUTES=%w{ConfirmOptIn UnsubscribePage ConfirmationSuccessPage ListID Title}
 
     # Example
     #  @list = new List(12345)
-    def initialize(id=nil, name=nil)
-      @id = id
-      @name = name
-      @cm_client = CampaignMonitor.new
+    def initialize(attrs={})
+      super
+      @attributes=attrs
     end
+
+    # Example
+    # 
+    # @list = @client.new_list.defaults
+
+    def defaults
+      defaults={"ConfirmOptIn" => "false",
+        "UnsubscribePage" => "",
+        "ConfirmationSuccessPage" => ""}
+      @attributes=defaults.merge(@attributes)
+      self
+    end
+
+    # AR like
+    def save
+      id ? Update : Create
+    end
+
+    # Loads a list by it's ID
+    #
+    # @list = List.GetDetail(1234)
+    def self.GetDetail(id)
+      list=self.new("ListID" => id)
+      list.GetDetail(true)
+      list.result.code == 101 ? nil : list
+    end
+    
+    # loads a list by it's ID
+    #
+    # @list = List.GetDetail(1234)
+    def self.[](k)
+      GetDetail(k)
+    end
+    
+    def GetDetail(overwrite=false)
+      @result=Result.new(cm_client.List_GetDetail("ListID" => id))
+      @attributes=@result.raw.merge(@attributes)
+      @attributes.merge!(@result.raw) if overwrite
+      @result.success?
+    end
+    
+    def Update
+      # if we're dealing with a half baked object that Client#lists has given
+      # us then we need to popular all the fields before we can attempt an update
+      unless @fully_baked
+        self.GetDetail
+        @fully_baked=true
+      end
+      @result=Result.new(cm_client.List_Update(@attributes))
+      @result.success?
+    end
+    
+    def Delete
+      @result=Result.new(cm_client.List_Delete("ListID" => id))
+      @result.success?
+    end
+    
+    def Create
+      @result=Result.new(cm_client.List_Create(@attributes))
+      self.id = @result.content if @result.success?
+      @result.success?
+    end    
 
     # Example
     #  @list = new List(12345)
