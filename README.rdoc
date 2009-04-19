@@ -4,13 +4,24 @@ This RubyGem provides access to the Campaign Monitor API (http://www.campaignmon
 
 Campaign Monitor recently made some changes to their API.
 
-This fork makes the following changes:
+patientslikeme's fork makes the following changes:
 
     * host changed from http://app.campaignmonitor.com to http://api.createsend.com
     * ID values are no longer sent #to_i because they are hex strings
     * added support for subscribers with custom fields using SOAP API
     * refactored gemspec to build on github
     * misc. cleanup and refactoring
+    
+This fork integrates the following additional changes:
+    
+    * updates Subscriber#is_subscribed? to work with the latest API. (from amiel)
+    * adds support for array values in custom_field_hash (from oferlin)
+    * API key cleanup (from yyyc514)
+    * added ability to get fetch lists by id using List#GetDetails or List#[] (from yyyc514)
+    * added support for adding and deleting clients (from yyyc514)
+    * added support for querying CM for countries and timezones (from yyyc514)
+    * added support for creating campaigns (from yyyc514)
+    * general test and api cleanup (from yyyc514)
 
 
 == Pre-requisites

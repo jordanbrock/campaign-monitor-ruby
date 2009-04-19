@@ -1,14 +1,14 @@
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'campaign_monitor'
-  s.version     = "1.3.2.2"
+  s.version     = "1.3.3"
   s.summary     = 'Provides access to the Campaign Monitor API.'
   s.description = <<-EOF
     A simple wrapper class that provides basic access to the Campaign Monitor API.
   EOF
   s.author      = 'Jeremy Weiskotten'
   s.email       = 'jweiskotten@patientslikeme.com'
-  s.homepage    = 'http://github.com/patientslikeme/campaign_monitor/'
+  s.homepage    = 'http://github.com/reidab/campaign_monitor/'
   s.has_rdoc    = true
   
   s.requirements << 'none'
