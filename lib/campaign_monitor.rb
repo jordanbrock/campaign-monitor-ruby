@@ -47,7 +47,7 @@ require File.join(File.dirname(__FILE__), 'campaign_monitor/campaign.rb')
 #   client.GetLists
 #   client.lists.build # to create a new unsaved list for a client
 #   client.campaigns # OR
-#   client.GetCampaigns 
+#   client.GetCampaigns
 #
 # == LIST
 #   list = List[list_id] # find an existing list
@@ -88,15 +88,15 @@ require File.join(File.dirname(__FILE__), 'campaign_monitor/campaign.rb')
 #
 class CampaignMonitor
   include CampaignMonitor::Helpers
-  
+
   class InvalidAPIKey < StandardError
   end
 
   class ApiError < StandardError
   end
-  
+
   attr_reader :api_key, :api_url
-  
+
   # Replace this API key with your own (http://www.campaignmonitor.com/api/)
   def initialize(api_key=CAMPAIGN_MONITOR_API_KEY)
     @api_key = api_key
@@ -124,11 +124,11 @@ class CampaignMonitor
   # Takes a CampaignMonitor API method name and set of parameters; returns the correct URL for the REST API.
   def request_url(method, params={})
     params.merge!('ApiKey' => api_key)
-    
+
     query = params.collect do |key, value|
       "#{CGI.escape(key.to_s)}=#{CGI.escape(value.to_s)}"
     end.sort * '&'
-    
+
     "#{api_url}/#{method}?#{query}"
   end
 
@@ -161,11 +161,11 @@ class CampaignMonitor
       response["Client"].collect{|c| Client.new({"ClientID" => c["ClientID"], "CompanyName" => c["Name"]})}
     end
   end
-  
+
   def new_client
     Client.new(nil)
   end
-  
+
   def system_date
     User_GetSystemDate()
   end
@@ -173,19 +173,19 @@ class CampaignMonitor
   def parsed_system_date
     DateTime.strptime(system_date, timestamp_format)
   end
-  
+
   def countries
     handle_response(User_GetCountries()) do | response |
       response["string"]
     end
   end
-  
+
   def timezones
     handle_response(User_GetTimezones()) do | response |
       response["string"]
     end
   end
-  
+
   # Returns an array of Campaign objects associated with the specified Client ID
   #
   # Example
@@ -228,13 +228,26 @@ class CampaignMonitor
   def add_subscriber(list_id, email, name)
     Result.new(Subscriber_Add("ListID" => list_id, "Email" => email, "Name" => name))
   end
-  
+
+  # A quick method of removing a subscriber from a list. Returns a Result object
+  #
+  # Example
+  #  @cm = CampaignMonitor.new()
+  #  result = @cm.remove_subscriber(12345, "ralph.wiggum@simpsons.net")
+  #
+  #  if result.succeeded?
+  #    puts "Subscriber Added to List"
+  #  end
+  def remove_subscriber(list_id, email)
+    Result.new(Subscriber_Add("ListID" => list_id, "Email" => email))
+  end
+
   def using_soap
     driver = wsdl_driver_factory.create_rpc_driver
     driver.wiredump_dev = STDERR if $debug
     response = yield(driver)
     driver.reset_stream
-    
+
     response
   end
 
@@ -243,11 +256,11 @@ class CampaignMonitor
     def wsdl_driver_factory
       SOAP::WSDLDriverFactory.new("#{api_url}?WSDL")
     end
-  
+
 end
 
 # If libxml is installed, we use the FasterXmlSimple library, that provides most of the functionality of XmlSimple
-# except it uses the xml/libxml library for xml parsing (rather than REXML). 
+# except it uses the xml/libxml library for xml parsing (rather than REXML).
 # If libxml isn't installed, we just fall back on XmlSimple.
 
 PARSER =
@@ -257,7 +270,7 @@ PARSER =
     # have to use a version greater than '0.3.8.2'.
     raise LoadError unless XML::Parser::VERSION > '0.3.8.2'
     $:.push(File.join(File.dirname(__FILE__), '..', 'support', 'faster-xml-simple', 'lib'))
-    require 'faster_xml_simple' 
+    require 'faster_xml_simple'
     FasterXmlSimple
   rescue LoadError
     begin
